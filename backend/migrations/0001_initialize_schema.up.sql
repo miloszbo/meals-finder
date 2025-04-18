@@ -17,7 +17,7 @@ CREATE TABLE users (
 
 -- Table: recipes
 CREATE TABLE recipes (
-    id int SERIAL PRIMARY KEY,
+    id SERIAL PRIMARY KEY,
     name VARCHAR(100),
     synopsis VARCHAR(100),
     time INTEGER, -- Preparation time in minutes
@@ -27,7 +27,7 @@ CREATE TABLE recipes (
 -- Table: reviews
 CREATE TABLE reviews (
     id SERIAL PRIMARY KEY,
-    recipe_id int,
+    recipe_id INTEGER,
     user_id INTEGER,
     review INTEGER,
     FOREIGN KEY (recipe_id) REFERENCES recipes(id),
@@ -42,9 +42,9 @@ CREATE TABLE ingredients (
 
 -- Table: recipes_ingredients
 CREATE TABLE recipes_ingredients (
-    recipe_id int,
+    recipe_id INTEGER,
     ingredient_id INTEGER,
-    amount int,
+    amount INTEGER,
     unit INTEGER DEFAULT 0,
     FOREIGN KEY (recipe_id) REFERENCES recipes(id),
     FOREIGN KEY (ingredient_id) REFERENCES ingredients(id)
@@ -66,7 +66,7 @@ CREATE TABLE tags (
 
 -- Table: recipes_tags
 CREATE TABLE recipes_tags (
-    recipe_id int,
+    recipe_id INTEGER,
     tag_id INTEGER,
     FOREIGN KEY (recipe_id) REFERENCES recipes(id),
     FOREIGN KEY (tag_id) REFERENCES tags(id)

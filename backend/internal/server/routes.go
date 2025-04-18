@@ -5,6 +5,7 @@ import (
 
 	"github.com/miloszbo/meals-finder/internal/handlers"
 	"github.com/miloszbo/meals-finder/internal/middlewares"
+	"github.com/miloszbo/meals-finder/internal/repositories"
 )
 
 func SetupRoutes() http.Handler {
@@ -12,9 +13,14 @@ func SetupRoutes() http.Handler {
 
 	conn := NewConnection()
 
-	helloWorldHandler := handlers.NewHelloWorldHandler(conn)
-
-	mux.HandleFunc("GET /", helloWorldHandler.Greetings)
+	 // Hello‑world endpoint
+	 helloWorldHandler := handlers.NewHelloWorldHandler(conn)
+	 mux.HandleFunc("GET /hi", helloWorldHandler.Greetings)
+ 
+	 // User‑creation endpoint
+	 queries := db.New(conn)
+	 userCmdHandler := handlers.NewUserCommandHandler(queries)
+	 mux.HandleFunc("POST /create_user", userCmdHandler.CreateUser)
 
 	return middlewares.Logging(mux)
 }
