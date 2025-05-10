@@ -19,6 +19,7 @@ func SetupRoutes() http.Handler {
 	}
 
 	mux.HandleFunc("GET /user/login", userHandler.LoginUser)
+	mux.HandleFunc("POST /user/register", userHandler.CreateUser)
 
 	return middlewares.Logging(mux)
 }

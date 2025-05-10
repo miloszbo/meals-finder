@@ -18,6 +18,7 @@ var key []byte = []byte(os.Getenv("APP_JWT_KEY"))
 
 type UserService interface {
 	LoginUser(ctx context.Context, loginData *models.LoginUserRequest) (string, error)
+	CreateUser(ctx context.Context, req *models.CreateUserRequest) error
 }
 
 type BaseUserService struct {
@@ -51,6 +52,38 @@ func (s *BaseUserService) LoginUser(ctx context.Context, loginData *models.Login
 	return token, nil
 }
 
+func (s *BaseUserService) CreateUser(ctx context.Context, req *models.CreateUserRequest) error {
+	if err := req.Validate(); err != nil {
+		return ErrInternalFailure
+	}
+
+	hashedPasswd, err := bcrypt.GenerateFromPassword([]byte(req.Passwdhash), bcrypt.DefaultCost)
+	if err != nil {
+		log.Println("password hashing failed:", err)
+		return ErrInternalFailure
+	}
+
+	err = s.Repo.CreateUser(ctx, repository.CreateUserParams{
+		Username:    req.Username,
+		Passwdhash:  string(hashedPasswd),
+		Email:       req.Email,
+		Name:        req.Name,
+		Surname:     req.Surname,
+		PhoneNumber: req.PhoneNumber,
+		Age:         req.Age,
+		Sex:         req.Sex,
+	})
+
+	if err != nil {
+		log.Println("create user failed:", err)
+		return ErrInternalFailure
+	}
+
+	return nil
+}
+
+
+
 func (s *BaseUserService) generateJWT(username string) (string, error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256,
 		jwt.MapClaims{
@@ -61,6 +94,7 @@ func (s *BaseUserService) generateJWT(username string) (string, error) {
 	return t.SignedString(key)
 }
 
+// For testing
 type MockUserService struct{}
 
 func (s *MockUserService) LoginUser(ctx context.Context, loginData *models.LoginUserRequest) (string, error) {
@@ -71,4 +105,8 @@ func (s *MockUserService) LoginUser(ctx context.Context, loginData *models.Login
 			"iat": time.Now().Unix(),
 		})
 	return t.SignedString(key)
+}
+
+func (s *MockUserService) CreateUser(ctx context.Context, req *models.CreateUserRequest) error {
+	return nil
 }

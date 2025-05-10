@@ -49,3 +49,20 @@ func (u *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 }
+
+func (uh *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
+	var req models.CreateUserRequest
+
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Validate() != nil {
+		http.Error(w, ErrBadRequest.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := uh.UserService.CreateUser(r.Context(), &req); err != nil {
+		http.Error(w, err.Error(), StatusFromError(err))
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(`{"message":"user created"}`))
+}
