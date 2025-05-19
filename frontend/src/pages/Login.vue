@@ -14,7 +14,7 @@
     <div class="w-full lg:w-1/2 flex items-center justify-center bg-base-200">
       <div class="w-full max-w-md p-8 flex flex-col items-center justify-center">
 
-        <router-link to="/" class="text-4xl font-bold mb-8 hover:text-primary transition-colors duration-200">
+        <router-link to="/home" class="text-4xl font-bold mb-8 hover:text-primary transition-colors duration-200">
           MealsFinder
         </router-link>
 
@@ -28,8 +28,8 @@
           </div>
 
           <div class="form-control mb-4 w-full flex justify-center">
-            <button class="btn btn-primary w-full">Log in</button>
-          </div>
+          <router-link to="/profile" class="btn btn-primary w-full text-center">Log in</router-link>         
+           </div>
 
           <div class="text-center text-sm">
             <span>Don't have an account?</span>
