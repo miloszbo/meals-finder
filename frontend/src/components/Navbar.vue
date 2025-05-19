@@ -1,37 +1,70 @@
 <template>
-    <div class="navbar bg-base-100 shadow-md px-4">
-      <!-- Lewa strona (logo) -->
-      <div class="flex-1">
-        <a class="btn btn-ghost text-xl">MojaAplikacja</a>
-      </div>
-  
-      <!-- Prawa strona (duże ekrany) -->
-      <div class="hidden lg:flex">
-        <ul class="menu menu-horizontal px-1">
-          <li><a>Home</a></li>
-          <li><a>O nas</a></li>
-          <li><a>Kontakt</a></li>
-        </ul>
-      </div>
-  
-      <!-- Hamburger + Dropdown (małe ekrany) -->
-      <div class="dropdown dropdown-end lg:hidden">
-        <div tabindex="0" role="button" class="btn btn-ghost btn-square">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none"
-            viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round"
-              stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
+  <header class="bg-[#0A1118] text-white text-base">
+    <div class="flex items-center justify-between p-4">
+      <!-- Logo -->
+        <router-link to="/" class="text-5xl font-bold mb-8 hover:text-primary transition-colors duration-200">
+          MealsFinder
+        </router-link>
+
+      <!-- Pasek wyszukiwania -->
+      <div class="hidden md:flex justify-center mx-4" style="width: 1088px; height: 48px;">
+        <div class="flex w-full bg-[#1a1f26] rounded-full overflow-hidden h-full">
+          <input
+            type="text"
+            placeholder="Search..."
+            class="w-full bg-transparent text-white px-4 outline-none"
+          />
+          <button class="px-4">
+            <i class="fas fa-search"></i>
+          </button>
         </div>
-        <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
-          <li><a>Home</a></li>
-          <li><a>O nas</a></li>
-          <li><a>Kontakt</a></li>
-        </ul>
+      </div>
+
+      <!-- Ikony po prawej -->
+      <div class="flex items-center gap-4 text-lg">
+       <router-link to="/browser" title="Recipes">
+      <i class="fa-solid fa-clipboard-list cursor-pointer hover:text-gray-300"></i>
+       </router-link>
+
+      
+     <!--
+     <a href="/favorites" title="Favorites">
+     <i class="fa-solid fa-heart cursor-pointer hover:text-gray-300"></i>
+      </a>
+     -->
+      <router-link to="/login" title="Profile">
+        <i class="fa-solid fa-user cursor-pointer hover:text-gray-300"></i>
+      </router-link>
+
       </div>
     </div>
-  </template>
-  
-  <script setup>
-  // Brak logiki — czysto struktura HTML
-  </script>
+
+    <!-- Kategorie -->
+    <nav class="bg-[#0A1118] border-t border-[#1f2a34] flex flex-wrap justify-center gap-6 px-4 py-2">
+      <a
+        v-for="cat in categories"
+        :key="cat"
+        :href="`/categories/${cat.toLowerCase().replace(/ /g, '-')}`"
+        class="text-white"
+        style="font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 24px; line-height: 100%; text-align: center; vertical-align: middle;"
+      >
+        {{ cat }}
+      </a>
+    </nav>
+  </header>
+</template>
+
+<script setup>
+const categories = [
+  "Europe",
+  "Asian",
+  "North American",
+  "South American",
+  "African",
+  "Oceanian"
+];
+</script>
+
+<style scoped>
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@700&family=Roboto:wght@700&display=swap');
+</style>
