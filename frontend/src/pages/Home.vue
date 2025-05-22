@@ -1,8 +1,11 @@
 <template>
   <div class="main-page">
-
-    <!-- Tu możesz dodać treść strony głównej -->
-    <h1>Witaj na stronie głównej!</h1>
+    <Navbar />
+    <!-- Tu będzie dalsza część strony -->
+    <div class="content p-6 text-white">
+      <!-- przykładowa zawartość -->
+      <p>Welcome to MealsFinder!</p>
+    </div>
   </div>
 </template>
 
@@ -19,13 +22,6 @@ export default {
 
 <style scoped>
 .main-page {
-  width: 100vw;
-  height: 100vh;
-  background: linear-gradient(to right, #4facfe, #00f2fe);
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  color: white;
-  font-size: 2rem;
+  background-color: #6785; 
 }
 </style>
