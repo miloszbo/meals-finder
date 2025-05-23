@@ -1,5 +1,5 @@
 -- name: FilterRecipesByTagNamesAndParams :many
-SELECT r.id
+SELECT r.name, r.synopsis, r.time, r.difficulty
 FROM recipes r
 WHERE
   -- Min preparation time (optional)
