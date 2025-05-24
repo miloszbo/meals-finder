@@ -36,7 +36,7 @@
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="password" placeholder="Confirm Password" class="input input-bordered w-full" v-model="form.confirmPasswordpassword" />
+              <input type="password" placeholder="Confirm Password" class="input input-bordered w-full" v-model="form.confirmPassword" />
             </div>
 
             <div class="form-control mb-4 w-full flex justify-center">
@@ -51,15 +51,16 @@
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="text" placeholder="Age" class="input input-bordered w-full" v-model="age" />
+              <input type="text" placeholder="Age" class="input input-bordered w-full" v-model="form.age" />
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="text" placeholder="Sex" class="input input-bordered w-full" v-model="sex" />
+              <input type="text" placeholder="Sex" class="input input-bordered w-full" v-model="form.sex" />
             </div>
 
             <div class="form-control mb-4 w-full">
-              <button type="submit" class="btn btn-success w-full">Sign up</button>
+              <button type="submit" class="btn btn-success w-full" @click.prevent="registerUser">Sign up</button>
+
             </div>
           </template>
 
@@ -81,6 +82,8 @@
 </template>
 
 <script>
+import api from '@/api/axios'
+
 export default {
   name: 'RegisterPage',
   data() {
@@ -90,10 +93,43 @@ export default {
         username: '',
         email: '',
         password: '',
-        confirmPassword: '',
+        confirmPassword: '', 
         sex: '',
         age: '',
         phoneNumber: ''
+      }
+    }
+  },
+  methods: {
+    async registerUser() {
+
+     if (!this.form.username || !this.form.email || !this.form.password || !this.form.confirmPassword) {
+     alert('Uzupełnij wszystkie wymagane pola.')
+     return
+     }
+
+    if (this.form.password !== this.form.confirmPassword) {
+    alert('Hasła się nie zgadzają')
+    return
+     }
+      try {
+        const payload = {
+          username: this.form.username,
+          email: this.form.email,
+          password: this.form.password,
+          confirm_password: this.form.confirmPassword,
+          sex: this.form.sex,
+          age: this.form.age,
+          phone_number: this.form.phoneNumber
+        }
+
+        const res = await api.post('/user/register', payload)
+        console.log('Zarejestrowano:', res.data)
+        alert.apply("Rejestracja zakończona sukcesem")
+        this.$router.push('/login')
+      } catch (err) {
+        console.error('Błąd rejestracji:', err)
+        alert('Rejestracja nie powiodła się. Sprawdź dane.')
       }
     }
   }
