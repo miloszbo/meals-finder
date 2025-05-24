@@ -14,85 +14,85 @@ SELECT r.name, r.synopsis, r.time, r.difficulty
 FROM recipes r
 WHERE
   -- Min preparation time (optional)
-  ($7 = 0 OR r.time >= $7)
+  ($1::int = 0 OR r.time >= $1::int)
 
   -- Max preparation time (optional)
-  AND ($8 = 0 OR r.time <= $8)
+  AND ($2::int = 0 OR r.time <= $2::int)
 
   -- Min difficulty (optional)
-  AND ($9 = 0 OR r.difficulty >= $9)
+  AND ($3::int = 0 OR r.difficulty >= $3::int)
 
   -- Max difficulty (optional)
-  AND ($10 = 0 OR r.difficulty <= $10)
+  AND ($4::int = 0 OR r.difficulty <= $4::int)
 
   -- Type 1 (Dieta): OR within, AND across types
-  AND ($1::text[] IS NULL OR EXISTS (
-    SELECT 1 FROM recipes_tags rt
-    JOIN tags t ON t.id = rt.tag_id
-    WHERE rt.recipe_id = r.id
-      AND t.type_id = 1
-      AND t.name = ANY($1)
-  ))
-
-  -- Type 2 (Region)
-  AND ($2::text[] IS NULL OR EXISTS (
-    SELECT 1 FROM recipes_tags rt
-    JOIN tags t ON t.id = rt.tag_id
-    WHERE rt.recipe_id = r.id
-      AND t.type_id = 2
-      AND t.name = ANY($2)
-  ))
-
-  -- Type 3 (Rodzaj)
-  AND ($3::text[] IS NULL OR EXISTS (
-    SELECT 1 FROM recipes_tags rt
-    JOIN tags t ON t.id = rt.tag_id
-    WHERE rt.recipe_id = r.id
-      AND t.type_id = 3
-      AND t.name = ANY($3)
-  ))
-
-  -- Type 4 (Alergie): must NOT include any of these
-  AND ($4::text[] IS NULL OR NOT EXISTS (
-    SELECT 1 FROM recipes_tags rt
-    JOIN tags t ON t.id = rt.tag_id
-    WHERE rt.recipe_id = r.id
-      AND t.type_id = 4
-      AND t.name = ANY($4)
-  ))
-
-  -- Type 5 (Składniki_odżywcze)
   AND ($5::text[] IS NULL OR EXISTS (
     SELECT 1 FROM recipes_tags rt
     JOIN tags t ON t.id = rt.tag_id
     WHERE rt.recipe_id = r.id
-      AND t.type_id = 5
-      AND t.name = ANY($5)
+      AND t.type_id = 1
+      AND t.name = ANY($5::text[])
   ))
 
-  -- Type 6 (Inne)
+  -- Type 2 (Region)
   AND ($6::text[] IS NULL OR EXISTS (
     SELECT 1 FROM recipes_tags rt
     JOIN tags t ON t.id = rt.tag_id
     WHERE rt.recipe_id = r.id
+      AND t.type_id = 2
+      AND t.name = ANY($6::text[])
+  ))
+
+  -- Type 3 (Rodzaj)
+  AND ($7::text[] IS NULL OR EXISTS (
+    SELECT 1 FROM recipes_tags rt
+    JOIN tags t ON t.id = rt.tag_id
+    WHERE rt.recipe_id = r.id
+      AND t.type_id = 3
+      AND t.name = ANY($7::text[])
+  ))
+
+  -- Type 4 (Alergie): must NOT include any of these
+  AND ($8::text[] IS NULL OR NOT EXISTS (
+    SELECT 1 FROM recipes_tags rt
+    JOIN tags t ON t.id = rt.tag_id
+    WHERE rt.recipe_id = r.id
+      AND t.type_id = 4
+      AND t.name = ANY($8::text[])
+  ))
+
+  -- Type 5 (Składniki_odżywcze)
+  AND ($9::text[] IS NULL OR EXISTS (
+    SELECT 1 FROM recipes_tags rt
+    JOIN tags t ON t.id = rt.tag_id
+    WHERE rt.recipe_id = r.id
+      AND t.type_id = 5
+      AND t.name = ANY($9::text[])
+  ))
+
+  -- Type 6 (Inne)
+  AND ($10::text[] IS NULL OR EXISTS (
+    SELECT 1 FROM recipes_tags rt
+    JOIN tags t ON t.id = rt.tag_id
+    WHERE rt.recipe_id = r.id
       AND t.type_id = 6
-      AND t.name = ANY($6)
+      AND t.name = ANY($10::text[])
   ))
 
 ORDER BY r.id
 `
 
 type FilterRecipesByTagNamesAndParamsParams struct {
-	Column1  []string    `json:"column_1"`
-	Column2  []string    `json:"column_2"`
-	Column3  []string    `json:"column_3"`
-	Column4  []string    `json:"column_4"`
-	Column5  []string    `json:"column_5"`
-	Column6  []string    `json:"column_6"`
-	Column7  interface{} `json:"column_7"`
-	Column8  interface{} `json:"column_8"`
-	Column9  interface{} `json:"column_9"`
-	Column10 interface{} `json:"column_10"`
+	MinTime       int32    `json:"min_time"`
+	MaxTime       int32    `json:"max_time"`
+	MinDifficulty int32    `json:"min_difficulty"`
+	MaxDifficulty int32    `json:"max_difficulty"`
+	Diet          []string `json:"diet"`
+	Region        []string `json:"region"`
+	RecipeType    []string `json:"recipe_type"`
+	Allergies     []string `json:"allergies"`
+	Nutrients     []string `json:"nutrients"`
+	Others        []string `json:"others"`
 }
 
 type FilterRecipesByTagNamesAndParamsRow struct {
@@ -104,16 +104,16 @@ type FilterRecipesByTagNamesAndParamsRow struct {
 
 func (q *Queries) FilterRecipesByTagNamesAndParams(ctx context.Context, arg FilterRecipesByTagNamesAndParamsParams) ([]FilterRecipesByTagNamesAndParamsRow, error) {
 	rows, err := q.db.Query(ctx, filterRecipesByTagNamesAndParams,
-		arg.Column1,
-		arg.Column2,
-		arg.Column3,
-		arg.Column4,
-		arg.Column5,
-		arg.Column6,
-		arg.Column7,
-		arg.Column8,
-		arg.Column9,
-		arg.Column10,
+		arg.MinTime,
+		arg.MaxTime,
+		arg.MinDifficulty,
+		arg.MaxDifficulty,
+		arg.Diet,
+		arg.Region,
+		arg.RecipeType,
+		arg.Allergies,
+		arg.Nutrients,
+		arg.Others,
 	)
 	if err != nil {
 		return nil, err
