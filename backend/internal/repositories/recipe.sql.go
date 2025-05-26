@@ -79,7 +79,7 @@ WHERE
       AND t.name = ANY($10::text[])
   ))
 
-ORDER BY r.id
+ORDER BY r.id LIMIT $12::int OFFSET $11::int
 `
 
 type FilterRecipesByTagNamesAndParamsParams struct {
@@ -93,6 +93,8 @@ type FilterRecipesByTagNamesAndParamsParams struct {
 	Allergies     []string `json:"allergies"`
 	Nutrients     []string `json:"nutrients"`
 	Others        []string `json:"others"`
+	RecipesOffset int32    `json:"recipes_offset"`
+	RecipesLimit  int32    `json:"recipes_limit"`
 }
 
 type FilterRecipesByTagNamesAndParamsRow struct {
@@ -114,6 +116,8 @@ func (q *Queries) FilterRecipesByTagNamesAndParams(ctx context.Context, arg Filt
 		arg.Allergies,
 		arg.Nutrients,
 		arg.Others,
+		arg.RecipesOffset,
+		arg.RecipesLimit,
 	)
 	if err != nil {
 		return nil, err

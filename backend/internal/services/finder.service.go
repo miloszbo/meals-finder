@@ -4,14 +4,14 @@ import (
 	"context"
 	"fmt"
 	"net/url"
-	"strconv"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/miloszbo/meals-finder/internal/models"
 	repository "github.com/miloszbo/meals-finder/internal/repositories"
 )
 
 type FinderService interface {
-	FindRecipe(ctx context.Context, queries url.Values) ([]repository.FilterRecipesByTagNamesAndParamsRow, error)
+	FindRecipe(ctx context.Context, recipeParams models.RecipeFinderParams) ([]repository.FilterRecipesByTagNamesAndParamsRow, error)
 }
 
 type BaseFinderService struct {
@@ -19,23 +19,20 @@ type BaseFinderService struct {
 	Repo   *repository.Queries
 }
 
-func (b *BaseFinderService) FindRecipe(ctx context.Context, queries url.Values) ([]repository.FilterRecipesByTagNamesAndParamsRow, error) {
-	minTime, _ := strconv.Atoi(queries["minTime"][0])
-	maxTime, _ := strconv.Atoi(queries["maxTime"][0])
-	minDifficulty, _ := strconv.Atoi(queries["minDifficulty"][0])
-	maxDifficulty, _ := strconv.Atoi(queries["maxDifficulty"][0])
-
+func (b *BaseFinderService) FindRecipe(ctx context.Context, recipeParams models.RecipeFinderParams) ([]repository.FilterRecipesByTagNamesAndParamsRow, error) {
 	recipes, _ := b.Repo.FilterRecipesByTagNamesAndParams(ctx, repository.FilterRecipesByTagNamesAndParamsParams{
-		Diet:          queries["dieta"],
-		Region:        queries["region"],
-		RecipeType:    queries["rodzaj"],
-		Allergies:     queries["alergeny"],
-		Nutrients:     queries["skladnikiOdzywcze"],
-		Others:        queries["inne"],
-		MinTime:       int32(minTime),
-		MaxTime:       int32(maxTime),
-		MinDifficulty: int32(minDifficulty),
-		MaxDifficulty: int32(maxDifficulty),
+		Diet:          recipeParams.Diet,
+		Region:        recipeParams.Region,
+		RecipeType:    recipeParams.RecipeType,
+		Allergies:     recipeParams.Allergies,
+		Nutrients:     recipeParams.Nutrients,
+		Others:        recipeParams.Others,
+		MinTime:       recipeParams.MinTime,
+		MaxTime:       recipeParams.MaxTime,
+		MinDifficulty: recipeParams.MinDifficulty,
+		MaxDifficulty: recipeParams.MaxDifficulty,
+		RecipesOffset: recipeParams.Offset,
+		RecipesLimit:  recipeParams.Limit,
 	})
 
 	return recipes, nil

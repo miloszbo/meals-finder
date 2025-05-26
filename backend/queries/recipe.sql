@@ -68,4 +68,4 @@ WHERE
       AND t.name = ANY(@others::text[])
   ))
 
-ORDER BY r.id;
+ORDER BY r.id LIMIT @recipes_limit::int OFFSET @recipes_offset::int;
