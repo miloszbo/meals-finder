@@ -32,11 +32,11 @@
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="password" placeholder="Password" class="input input-bordered w-full" v-model="form.password" /> <!-- Passwd -->
+              <input type="password" placeholder="Password" class="input input-bordered w-full" v-model="form.passwd" /> <!-- Passwd -->
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="password" placeholder="Confirm Password" class="input input-bordered w-full" v-model="form.confirmPassword" />
+              <input type="password" placeholder="Confirm Password" class="input input-bordered w-full" v-model="form.confirmpasswd" />
             </div>
 
             <div class="form-control mb-4 w-full flex justify-center">
@@ -47,19 +47,25 @@
           <!-- Etap 2 -->
           <template v-else>
             <div class="form-control mb-4 w-full">
-              <input type="text" placeholder="Phone Number" class="input input-bordered w-full" v-model="form.phoneNumber" />
+              <input type="number" placeholder="Phone Number" class="input input-bordered w-full" v-model="form.phoneNumber" />
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="text" placeholder="Age" class="input input-bordered w-full" v-model="form.age" />
+              <input type="number" placeholder="Age" class="input input-bordered w-full" v-model.number="form.age" min="0"/>
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="text" placeholder="Sex" class="input input-bordered w-full" v-model="form.sex" />
+              <select v-model="form.sex" class="select select-bordered w-full">
+                <option disabled value="">Wybierz płeć</option>
+                <option value="Mężczyzna">Mężczyzna</option>
+                <option value="Kobieta">Kobieta</option>
+                <option value="Nie chcę podawać">Nie chcę podawać</option>
+              </select>
             </div>
-
+            
             <div class="form-control mb-4 w-full">
               <button type="submit" class="btn btn-success w-full" @click.prevent="registerUser">Sign up</button>
+              <button type="button" class="btn btn-outline w-full" @click="step = 1">← Back</button>
 
             </div>
           </template>
@@ -92,10 +98,10 @@ export default {
       form: {
         username: '',
         email: '',
-        password: '',
-        confirmPassword: '', 
+        passwd: '',
+        confirmpasswd: '', 
         sex: '',
-        age: '',
+        age: null,
         phoneNumber: ''
       }
     }
@@ -103,23 +109,39 @@ export default {
   methods: {
     async registerUser() {
 
-     if (!this.form.username || !this.form.email || !this.form.password || !this.form.confirmPassword) {
+     if (!this.form.username || !this.form.email || !this.form.passwd || !this.form.confirmpasswd || !this.form.age === "" || !this.form.sex || !this.form.phoneNumber){
      alert('Uzupełnij wszystkie wymagane pola.')
      return
      }
 
-    if (this.form.password !== this.form.confirmPassword) {
+    if (this.form.passwd !== this.form.confirmpasswd) {
     alert('Hasła się nie zgadzają')
     return
      }
+
+     if (this.form.age > 100){
+      alert("Błędny wiek")
+      return
+     }
+
+     if (this.form.phoneNumber.toString().length != 9){
+      alert("Błedny numer telefonu")
+      return
+     }
+
+     if (!this.form.email.includes("@")){
+      alert("Błędny email")
+      return
+     }
+
+
       try {
         const payload = {
           username: this.form.username,
           email: this.form.email,
-          password: this.form.password,
-          confirm_password: this.form.confirmPassword, 
+          passwd: this.form.passwd,
           sex: this.form.sex,   
-          age: this.form.age,
+          age: Number(this.form.age),
           phone_number: this.form.phoneNumber
         }
 
@@ -136,4 +158,11 @@ export default {
 }
 </script>
 
-<!-- pole sex pole wyboru--> 
+<style scoped>
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+</style>
