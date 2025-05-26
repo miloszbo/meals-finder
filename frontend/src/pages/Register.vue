@@ -32,7 +32,7 @@
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="password" placeholder="Password" class="input input-bordered w-full" v-model="form.password" />
+              <input type="password" placeholder="Password" class="input input-bordered w-full" v-model="form.password" /> <!-- Passwd -->
             </div>
 
             <div class="form-control mb-4 w-full">
@@ -117,8 +117,8 @@ export default {
           username: this.form.username,
           email: this.form.email,
           password: this.form.password,
-          confirm_password: this.form.confirmPassword,
-          sex: this.form.sex,
+          confirm_password: this.form.confirmPassword, 
+          sex: this.form.sex,   
           age: this.form.age,
           phone_number: this.form.phoneNumber
         }
@@ -135,3 +135,5 @@ export default {
   }
 }
 </script>
+
+<!-- pole sex pole wyboru--> 
