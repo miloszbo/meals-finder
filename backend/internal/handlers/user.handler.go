@@ -17,9 +17,9 @@ type UserHandler struct {
 
 func (u *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
-	loginData := &models.LoginUserRequest{}
+	loginData := models.LoginUserRequest{}
 
-	if err := json.NewDecoder(r.Body).Decode(loginData); err != nil {
+	if err := json.NewDecoder(r.Body).Decode(&loginData); err != nil {
 		log.Println(err.Error())
 		err := ErrBadRequest
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -30,7 +30,7 @@ func (u *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, ErrBadRequest.Error(), http.StatusBadRequest)
 	}
 
-	token, err := u.UserService.LoginUser(ctx, loginData)
+	token, err := u.UserService.LoginUser(ctx, &loginData)
 	if err != nil {
 		http.Error(w, err.Error(), StatusFromError(err))
 		return
@@ -54,11 +54,13 @@ func (uh *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 	var req models.CreateUserRequest
 
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil || req.Validate() != nil {
+		log.Println(err.Error())
 		http.Error(w, ErrBadRequest.Error(), http.StatusBadRequest)
 		return
 	}
 
 	if err := uh.UserService.CreateUser(r.Context(), &req); err != nil {
+		log.Println(err.Error())
 		http.Error(w, err.Error(), StatusFromError(err))
 		return
 	}

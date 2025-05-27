@@ -15,14 +15,12 @@ func (lur *LoginUserRequest) Validate() error {
 }
 
 type CreateUserRequest struct {
-	Username     string `json:"username"`
-	Passwdhash   string `json:"passwd"`        // maps to passwdhash column
-	Email        string `json:"email"`
-	Name         string `json:"name"`
-	Surname      string `json:"surname"`
-	PhoneNumber  string `json:"phone_number"`
-	Age          int32  `json:"age"`
-	Sex          string `json:"sex"`
+	Username    string `json:"username"`
+	Passwdhash  string `json:"passwd"` // maps to passwdhash column
+	Email       string `json:"email"`
+	PhoneNumber string `json:"phone_number"`
+	Age         int32  `json:"age"`
+	Sex         string `json:"sex"`
 }
 
 func (cur *CreateUserRequest) Validate() error {
