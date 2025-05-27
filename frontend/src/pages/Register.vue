@@ -32,11 +32,11 @@
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="password" placeholder="Password" class="input input-bordered w-full" v-model="form.password" />
+              <input type="password" placeholder="Password" class="input input-bordered w-full" v-model="form.passwd" /> <!-- Passwd -->
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="password" placeholder="Confirm Password" class="input input-bordered w-full" v-model="form.confirmPasswordpassword" />
+              <input type="password" placeholder="Confirm Password" class="input input-bordered w-full" v-model="form.confirmpasswd" />
             </div>
 
             <div class="form-control mb-4 w-full flex justify-center">
@@ -47,19 +47,26 @@
           <!-- Etap 2 -->
           <template v-else>
             <div class="form-control mb-4 w-full">
-              <input type="text" placeholder="Phone Number" class="input input-bordered w-full" v-model="form.phoneNumber" />
+              <input type="number" placeholder="Phone Number" class="input input-bordered w-full" v-model="form.phoneNumber" />
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="text" placeholder="Age" class="input input-bordered w-full" v-model="age" />
+              <input type="number" placeholder="Age" class="input input-bordered w-full" v-model.number="form.age" min="0"/>
             </div>
 
             <div class="form-control mb-4 w-full">
-              <input type="text" placeholder="Sex" class="input input-bordered w-full" v-model="sex" />
+              <select v-model="form.sex" class="select select-bordered w-full">
+                <option disabled value="">Wybierz płeć</option>
+                <option value="Mężczyzna">Mężczyzna</option>
+                <option value="Kobieta">Kobieta</option>
+                <option value="Nie chcę podawać">Nie chcę podawać</option>
+              </select>
             </div>
-
+            
             <div class="form-control mb-4 w-full">
-              <button type="submit" class="btn btn-success w-full">Sign up</button>
+              <button type="submit" class="btn btn-success w-full" @click.prevent="registerUser">Sign up</button>
+              <button type="button" class="btn btn-outline w-full" @click="step = 1">← Back</button>
+
             </div>
           </template>
 
@@ -81,6 +88,8 @@
 </template>
 
 <script>
+import api from '@/api/axios'
+
 export default {
   name: 'RegisterPage',
   data() {
@@ -89,13 +98,71 @@ export default {
       form: {
         username: '',
         email: '',
-        password: '',
-        confirmPassword: '',
+        passwd: '',
+        confirmpasswd: '', 
         sex: '',
-        age: '',
+        age: null,
         phoneNumber: ''
+      }
+    }
+  },
+  methods: {
+    async registerUser() {
+
+     if (!this.form.username || !this.form.email || !this.form.passwd || !this.form.confirmpasswd || !this.form.age === "" || !this.form.sex || !this.form.phoneNumber){
+     alert('Uzupełnij wszystkie wymagane pola.')
+     return
+     }
+
+    if (this.form.passwd !== this.form.confirmpasswd) {
+    alert('Hasła się nie zgadzają')
+    return
+     }
+
+     if (this.form.age > 100){
+      alert("Błędny wiek")
+      return
+     }
+
+     if (this.form.phoneNumber.toString().length != 9){
+      alert("Błedny numer telefonu")
+      return
+     }
+
+     if (!this.form.email.includes("@")){
+      alert("Błędny email")
+      return
+     }
+
+
+      try {
+        const payload = {
+          username: this.form.username,
+          email: this.form.email,
+          passwd: this.form.passwd,
+          sex: this.form.sex,   
+          age: Number(this.form.age),
+          phone_number: this.form.phoneNumber
+        }
+
+        const res = await api.post('/user/register', payload)
+        console.log('Zarejestrowano:', res.data)
+        alert.apply("Rejestracja zakończona sukcesem")
+        this.$router.push('/login')
+      } catch (err) {
+        console.error('Błąd rejestracji:', err)
+        alert('Rejestracja nie powiodła się. Sprawdź dane.')
       }
     }
   }
 }
 </script>
+
+<style scoped>
+input[type="number"]::-webkit-inner-spin-button,
+input[type="number"]::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+</style>

@@ -1,0 +1,124 @@
+[
+  {
+    "id": "1",
+    "name": "Wegetariańska zupa krem z dyni",
+    "time": 40,
+    "difficulty": 2,
+    "description": "Aromatyczna zupa krem z dyni z dodatkiem imbiru i mleczka kokosowego. Idealna na jesienne dni.",
+    "tags": ["wegetariańska", "Zupy", "Pieczone", "Kuchnia europejska", "lekkostrawne", "Błonnik"],
+    "image": "/images/zupa-dyniowa.jpg",
+    "ingredients": ["500g dyni", "1 cebula", "2 ząbki czosnku", "200ml mleczka kokosowego", "imbir, sól, pieprz"],
+    "instructions": [
+      "Obierz dynię i pokrój w kostkę.",
+      "Podsmaż cebulę i czosnek, dodaj dynię i zalej wodą.",
+      "Gotuj do miękkości, dodaj mleczko kokosowe.",
+      "Zblenduj i dopraw do smaku."
+    ]
+  },
+  {
+    "id": "2",
+    "name": "Keto jajecznica z awokado",
+    "time": 10,
+    "difficulty": 1,
+    "description": "Błyskawiczne keto śniadanie z jajkami, awokado i szczypiorkiem. Tłuszcz i białko w idealnej równowadze.",
+    "tags": ["keto", "Jajka", "Białka", "Kwasy tłuszczowe nienasycone", "Śniadanie", "tanie", "lekkostrawne"],
+    "image": "/images/keto-jajecznica.jpg",
+    "ingredients": ["3 jajka", "1/2 awokado", "masło klarowane", "szczypiorek, sól, pieprz"],
+    "instructions": [
+      "Rozgrzej patelnię z masłem klarowanym.",
+      "Roztrzep jajka, dodaj pokrojone awokado.",
+      "Smaż do pożądanej konsystencji, posyp szczypiorkiem."
+    ]
+  },
+  {
+    "id": "3",
+    "name": "Meksykańska miska z kurczakiem",
+    "time": 30,
+    "difficulty": 3,
+    "description": "Kolorowa, pożywna miska z ryżem, fasolą, warzywami i grillowanym kurczakiem w stylu meksykańskim.",
+    "tags": ["mięsna", "Kuchnia latynoamerykańska", "Grillowane", "Ryż", "Cukry złożone", "Białka", "Siarczyny i dodatki sztuczne(np. barwniki)"],
+    "image": "/images/meksykanska-miska.jpg",
+    "ingredients": ["150g piersi z kurczaka", "100g ryżu", "1/2 puszki czarnej fasoli", "papryka, kukurydza, przyprawa taco"],
+    "instructions": [
+      "Ugotuj ryż.",
+      "Grilluj kurczaka z przyprawą taco.",
+      "Wymieszaj składniki w misce i podawaj na ciepło."
+    ]
+  },
+  {
+    "id": "4",
+    "name": "Wegańskie curry z ciecierzycą",
+    "time": 35,
+    "difficulty": 2,
+    "description": "Rozgrzewające, gęste curry wegańskie na bazie pomidorów i mleczka kokosowego z dużą ilością białka roślinnego.",
+    "tags": ["vegańska", "Kuchnia indyjska", "Dania jednogarnkowe", "Białka", "Błonnik", "Soja", "lekkostrawne"],
+    "image": "/images/weganskie-curry.jpg",
+    "ingredients": ["1 puszka ciecierzycy", "1 cebula", "1 puszka pomidorów", "200ml mleczka kokosowego", "pasta curry, czosnek, imbir"],
+    "instructions": [
+      "Podsmaż cebulę z czosnkiem i imbirem.",
+      "Dodaj pastę curry, pomidory, mleczko kokosowe i ciecierzycę.",
+      "Gotuj na małym ogniu 20–25 minut. Podawaj z ryżem lub chlebkiem naan."
+    ]
+  },
+  {
+    "id": "5",
+    "name": "Wegańskie curry z ciecierzycą ",
+    "time": 43,
+    "difficulty": 3,
+    "description": "Rozgrzewające, gęste curry wegańskie na bazie pomidorów i mleczka kokosowego z dużą ilością białka roślinnego.",
+    "tags": ["Kuchnia indyjska", "Kuchnia latynoamerykańska", "Dania jednogarnkowe", "wegetariańska", "Zupy", "keto"],
+    "image": "/images/placeholder-5.jpg",
+    "ingredients": ["1 puszka ciecierzycy", "1 cebula", "1 puszka pomidorów", "200ml mleczka kokosowego", "pasta curry, czosnek, imbir"],
+    "instructions": [
+      "Podsmaż cebulę z czosnkiem i imbirem.",
+      "Dodaj pastę curry, pomidory, mleczko kokosowe i ciecierzycę.",
+      "Gotuj na małym ogniu 20–25 minut. Podawaj z ryżem lub chlebkiem naan."
+    ]
+  },
+  {
+    "id": "6",
+    "name": "Wegetariańska zupa krem z dyni ",
+    "time": 44,
+    "difficulty": 1,
+    "description": "Aromatyczna zupa krem z dyni z dodatkiem imbiru i mleczka kokosowego. Idealna na jesienne dni.",
+    "tags": ["Błonnik", "Grillowane", "Zupy", "Soja", "wegetariańska", "Kuchnia europejska"],
+    "image": "/images/placeholder-6.jpg",
+    "ingredients": ["500g dyni", "1 cebula", "2 ząbki czosnku", "200ml mleczka kokosowego", "imbir, sól, pieprz"],
+    "instructions": [
+      "Obierz dynię i pokrój w kostkę.",
+      "Podsmaż cebulę i czosnek, dodaj dynię i zalej wodą.",
+      "Gotuj do miękkości, dodaj mleczko kokosowe.",
+      "Zblenduj i dopraw do smaku."
+    ]
+  },
+  {
+    "id": "7",
+    "name": "Meksykańska miska z kurczakiem ",
+    "time": 37,
+    "difficulty": 1,
+    "description": "Kolorowa, pożywna miska z ryżem, fasolą, warzywami i grillowanym kurczakiem w stylu meksykańskim.",
+    "tags": ["Dania jednogarnkowe", "Cukry złożone", "keto", "Grillowane", "Jajka", "Kuchnia latynoamerykańska"],
+    "image": "/images/placeholder-7.jpg",
+    "ingredients": ["150g piersi z kurczaka", "100g ryżu", "1/2 puszki czarnej fasoli", "papryka, kukurydza, przyprawa taco"],
+    "instructions": [
+      "Ugotuj ryż.",
+      "Grilluj kurczaka z przyprawą taco.",
+      "Wymieszaj składniki w misce i podawaj na ciepło."
+    ]
+  },
+  {
+    "id": "8",
+    "name": "Keto jajecznica z awokado ",
+    "time": 16,
+    "difficulty": 1,
+    "description": "Błyskawiczne keto śniadanie z jajkami, awokado i szczypiorkiem. Tłuszcz i białko w idealnej równowadze.",
+    "tags": ["Kuchnia latynoamerykańska", "Jajka", "Grillowane", "Cukry złożone", "Dania jednogarnkowe", "Kuchnia indyjska"],
+    "image": "/images/placeholder-8.jpg",
+    "ingredients": ["3 jajka", "1/2 awokado", "masło klarowane", "szczypiorek, sól, pieprz"],
+    "instructions": [
+      "Rozgrzej patelnię z masłem klarowanym.",
+      "Roztrzep jajka, dodaj pokrojone awokado.",
+      "Smaż do pożądanej konsystencji, posyp szczypiorkiem."
+    ]
+  }
+]

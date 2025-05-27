@@ -1,5 +1,4 @@
 <template>
-  
   <div class="flex h-screen">
     <!-- Left panel -->
     <div class="w-1/2 hidden lg:block">
@@ -18,52 +17,79 @@
           MealsFinder
         </router-link>
 
-        <form class="w-full flex flex-col items-center">
+        <form class="w-full flex flex-col items-center" @submit.prevent="loginUser">
           <div class="form-control mb-4 w-full">
-            <input type="email" placeholder="Email" class="input input-bordered w-full" />
+            <input
+              type="text"
+              placeholder="Login"
+              class="input input-bordered w-full"
+              v-model="form.login"
+              required
+            />
           </div>
 
           <div class="form-control mb-4 w-full">
-            <input type="password" placeholder="Password" class="input input-bordered w-full" />
+            <input
+              type="password"
+              placeholder="Password"
+              class="input input-bordered w-full"
+              v-model="form.password"
+              required
+            />
           </div>
 
-          <div class="form-control mb-4 w-full flex justify-center">
-          <router-link to="/profile" class="btn btn-primary w-full text-center">Log in</router-link>         
-           </div>
+          <div class="form-control mb-4 w-full">
+            <button type="submit" class="btn btn-primary w-full">Log in</button>
+          </div>
 
           <div class="text-center text-sm">
             <span>Don't have an account?</span>
             <router-link to="/register" class="link link-primary ml-1">Sign up</router-link>
           </div>
-          <!--
-          <div class="text-center text-sm mt-2">
-            <a class="link link-hover link-secondary font-semibold">Forgot password?</a>
-          </div>
-          -->
         </form>
       </div>
     </div>
   </div>
-
 </template>
 
 <script>
-import html2canvas from 'html2canvas'
+import api from '@/api/axios'
 
 export default {
   name: 'LoginPage',
+  data() {
+    return {
+      form: {
+        login: '',
+        password: ''
+      }
+    }
+  },
   methods: {
-    captureImage() {
-      html2canvas(this.$refs.captureTarget).then(canvas => {
-        const link = document.createElement('a')
-        link.download = 'log-dish.jpg'
-        link.href = canvas.toDataURL('image/jpeg', 0.95)
-        link.click()
-      })
+    async loginUser() {
+      try {
+        const res = await api.get('/user/login', {
+          params: {
+            login: this.form.login,
+            password: this.form.password
+          }
+        })
+
+      
+        if (res.status === 200) {
+          const token = res.data.token
+          if (token) {
+            localStorage.setItem('token', token)
+          }
+
+          alert('Zalogowano pomyślnie!')
+          this.$router.push('/profile')
+        }
+      } catch (err) {
+        console.error('Błąd logowania:', err)
+        alert('Nieprawidłowy login lub hasło.')
+      }
     }
   }
 }
 </script>
-
-<style>
-</style>
