@@ -141,13 +141,13 @@ export default {
           email: this.form.email,
           passwd: this.form.passwd,
           sex: this.form.sex,   
-          age: Number(this.form.age),
-          phone_number: this.form.phoneNumber
+          age: this.form.age,
+          phone_number: this.form.phoneNumber.toString()
         }
 
         const res = await api.post('/user/register', payload)
         console.log('Zarejestrowano:', res.data)
-        alert.apply("Rejestracja zakończona sukcesem")
+        //alert.apply("Rejestracja zakończona sukcesem")
         this.$router.push('/login')
       } catch (err) {
         console.error('Błąd rejestracji:', err)
