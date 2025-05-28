@@ -10,14 +10,14 @@ COPY . .
 
 RUN npm run build
 
-FROM node:lts-alpine AS production-stage
+FROM node:lts-alpine AS prod
 
 WORKDIR /app
 
 COPY --from=build-stage /app /app
 
-RUN npm install --production
+RUN npm install
 
-EXPOSE 3000
+EXPOSE 5173
 
-CMD [ "npm", "run", "start" ]
+CMD [ "npm", "run", "dev" ]
