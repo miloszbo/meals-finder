@@ -6,7 +6,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 
 	"github.com/golang-jwt/jwt/v5"
 	_ "github.com/joho/godotenv/autoload"
@@ -20,16 +19,9 @@ func writeUnauthed(w http.ResponseWriter) {
 
 func Authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authorization := r.Header.Get("Authorization")
+		jwtToken, err := r.Cookie("auth_token")
 
-		if !strings.HasPrefix(authorization, "Bearer ") {
-			writeUnauthed(w)
-			return
-		}
-
-		jwtToken := strings.TrimPrefix(authorization, "Bearer ")
-
-		token, err := jwt.Parse(jwtToken, func(t *jwt.Token) (any, error) {
+		token, err := jwt.Parse(jwtToken.Value, func(t *jwt.Token) (any, error) {
 			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 			}
