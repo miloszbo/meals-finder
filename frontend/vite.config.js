@@ -13,4 +13,7 @@ export default defineConfig({
       '@': path.resolve(__dirname, './src'), // <-- kluczowy alias
     },
   },
+    server: {
+      host: true,
+    },
 })
