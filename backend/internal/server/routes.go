@@ -26,5 +26,10 @@ func SetupRoutes() http.Handler {
 		middlewares.Logging,
 	)
 
+	authMux := http.NewServeMux()
+	authMux.HandleFunc("GET /profile", userHandler.GetProfile)
+
+	mux.Handle("/", middlewares.Authentication(authMux))
+
 	return stack(mux)
 }
