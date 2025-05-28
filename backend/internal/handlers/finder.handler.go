@@ -36,7 +36,7 @@ func (f *FinderHandler) FindRecipes(w http.ResponseWriter, r *http.Request) {
 	minDifficulty, _ := strconv.ParseInt(queries["minDifficulty"][0], 10, 32)
 	maxDifficulty, _ := strconv.ParseInt(queries["maxDifficulty"][0], 10, 32)
 
-	recipeParams := models.RecipeFinderParams{
+	recipeParams := models.RecipesFinderParams{
 		Diet:          queries["dieta"],
 		Region:        queries["region"],
 		RecipeType:    queries["rodzaj"],

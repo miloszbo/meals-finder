@@ -1,6 +1,6 @@
 package models
 
-type RecipeFinderParams struct {
+type RecipesFinderParams struct {
 	Diet          []string
 	Region        []string
 	RecipeType    []string
