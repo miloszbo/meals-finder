@@ -9,7 +9,6 @@ App for finding recipes.
 - Milosz Borowiecki
 - Karol Chruzik
 ### Frontend Developers
-- Dominik Niedostatkiewicz
 - Kacper Gorlewicz
 - Marcin Dulik
 ### Designer
