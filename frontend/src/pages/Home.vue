@@ -1,27 +1,25 @@
 <template>
-  <div class="main-page">
+  <div class="flex-1 flex flex-col">
     <Navbar />
-    <!-- Tu będzie dalsza część strony -->
-    <div class="content p-6 text-white">
-      <!-- przykładowa zawartość -->
-      <p>Welcome to MealsFinder!</p>
-    </div>
+    <TopOfTheWeek />
+    <CategoryBrowser />
+    <GotAFavoriteRecipe />
   </div>
 </template>
 
 <script>
 import Navbar from '../components/Navbar.vue'
+import TopOfTheWeek from '../components/TopOfTheWeek.vue'
+import CategoryBrowser from '../components/CategoryBrowser.vue'
+import GotAFavoriteRecipe from '../components/GotAFavoriteRecipe.vue'
 
 export default {
   name: 'HomePage',
   components: {
-    Navbar
+    Navbar,
+    TopOfTheWeek,
+    CategoryBrowser,
+    GotAFavoriteRecipe
   }
 }
 </script>
-
-<style scoped>
-.main-page {
-  background-color: #6785; 
-}
-</style>
