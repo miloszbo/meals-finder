@@ -12,3 +12,6 @@ INSERT INTO users (
 ) VALUES (
     $1, $2, $3, $4, $5, $6
 );
+
+-- name: GetUserData :one
+SELECT username, created_at, email, name, surname, phone_number, age, sex, weight, height, BMI FROM users WHERE users.username = $1;

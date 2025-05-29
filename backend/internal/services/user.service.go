@@ -19,6 +19,7 @@ var key []byte = []byte(os.Getenv("APP_JWT_KEY"))
 type UserService interface {
 	LoginUser(ctx context.Context, loginData *models.LoginUserRequest) (string, error)
 	CreateUser(ctx context.Context, req *models.CreateUserRequest) error
+	GetUser(ctx context.Context, username string) (repository.GetUserDataRow, error)
 }
 
 type BaseUserService struct {
@@ -78,6 +79,12 @@ func (s *BaseUserService) CreateUser(ctx context.Context, req *models.CreateUser
 	}
 
 	return nil
+}
+
+func (s *BaseUserService) GetUser(ctx context.Context, username string) (repository.GetUserDataRow, error) {
+	data, err := s.Repo.GetUserData(ctx, username)
+
+	return data, err
 }
 
 func (s *BaseUserService) generateJWT(username string) (string, error) {
