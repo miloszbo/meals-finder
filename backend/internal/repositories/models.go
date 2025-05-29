@@ -14,11 +14,12 @@ type Ingredient struct {
 }
 
 type Recipe struct {
-	ID         int32  `json:"id"`
-	Name       string `json:"name"`
-	Synopsis   string `json:"synopsis"`
-	Time       int32  `json:"time"`
-	Difficulty int32  `json:"difficulty"`
+	ID          int32  `json:"id"`
+	Name        string `json:"name"`
+	Recipe      string `json:"recipe"`
+	Ingredients []byte `json:"ingredients"`
+	Time        int32  `json:"time"`
+	Difficulty  int32  `json:"difficulty"`
 }
 
 type RecipesIngredient struct {
