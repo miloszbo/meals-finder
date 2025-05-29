@@ -18,8 +18,18 @@ func SetupRoutes() http.Handler {
 		UserService: &userService,
 	}
 
-	mux.HandleFunc("GET /user/login", userHandler.LoginUser)
+	mux.HandleFunc("POST /user/login", userHandler.LoginUser)
 	mux.HandleFunc("POST /user/register", userHandler.CreateUser)
 
-	return middlewares.Logging(mux)
+	stack := middlewares.CreateStack(
+		middlewares.CorsMiddleware,
+		middlewares.Logging,
+	)
+
+	authMux := http.NewServeMux()
+	authMux.HandleFunc("GET /profile", userHandler.GetProfile)
+
+	mux.Handle("/", middlewares.Authentication(authMux))
+
+	return stack(mux)
 }
