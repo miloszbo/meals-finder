@@ -68,11 +68,9 @@ export default {
   methods: {
     async loginUser() {
       try {
-        const res = await api.get('/user/login', {
-          params: {
-            login: this.form.login,
-            password: this.form.password
-          }
+        const res = await api.post('/user/login', {
+          login: this.form.login,
+          password: this.form.password
         })
 
       

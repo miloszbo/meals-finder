@@ -67,8 +67,6 @@ func (s *BaseUserService) CreateUser(ctx context.Context, req *models.CreateUser
 		Username:    req.Username,
 		Passwdhash:  string(hashedPasswd),
 		Email:       req.Email,
-		Name:        req.Name,
-		Surname:     req.Surname,
 		PhoneNumber: req.PhoneNumber,
 		Age:         req.Age,
 		Sex:         req.Sex,
@@ -81,8 +79,6 @@ func (s *BaseUserService) CreateUser(ctx context.Context, req *models.CreateUser
 
 	return nil
 }
-
-
 
 func (s *BaseUserService) generateJWT(username string) (string, error) {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256,
