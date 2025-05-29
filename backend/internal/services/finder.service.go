@@ -2,8 +2,7 @@ package services
 
 import (
 	"context"
-	"fmt"
-	"net/url"
+	"log"
 
 	"github.com/jackc/pgx/v5"
 	"github.com/miloszbo/meals-finder/internal/models"
@@ -11,7 +10,7 @@ import (
 )
 
 type FinderService interface {
-	FindRecipe(ctx context.Context, recipeParams models.RecipeFinderParams) ([]repository.FilterRecipesByTagNamesAndParamsRow, error)
+	FindRecipe(ctx context.Context, recipeParams models.RecipesFinderParams) ([]repository.FilterRecipesByTagNamesAndParamsRow, error)
 }
 
 type BaseFinderService struct {
@@ -19,7 +18,7 @@ type BaseFinderService struct {
 	Repo   *repository.Queries
 }
 
-func (b *BaseFinderService) FindRecipe(ctx context.Context, recipeParams models.RecipeFinderParams) ([]repository.FilterRecipesByTagNamesAndParamsRow, error) {
+func (b *BaseFinderService) FindRecipe(ctx context.Context, recipeParams models.RecipesFinderParams) ([]repository.FilterRecipesByTagNamesAndParamsRow, error) {
 	recipes, _ := b.Repo.FilterRecipesByTagNamesAndParams(ctx, repository.FilterRecipesByTagNamesAndParamsParams{
 		Diet:          recipeParams.Diet,
 		Region:        recipeParams.Region,
@@ -40,9 +39,7 @@ func (b *BaseFinderService) FindRecipe(ctx context.Context, recipeParams models.
 
 type MockFinderService struct{}
 
-func (m *MockFinderService) FindRecipe(ctx context.Context, queries url.Values) error {
-	for key, val := range queries {
-		fmt.Println(key, " ", val)
-	}
-	return nil
+func (m *MockFinderService) FindRecipe(ctx context.Context, recipeParams models.RecipesFinderParams) ([]repository.FilterRecipesByTagNamesAndParamsRow, error) {
+	log.Println(recipeParams)
+	return nil, nil
 }
