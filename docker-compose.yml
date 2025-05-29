@@ -1,12 +1,15 @@
 services:
-  app:
+  backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
       - ${APP_PORT}:${APP_PORT}
+    env_file:
+      - .env
     environment:
+      APP_ENV: local
       PORT: ${APP_PORT}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
@@ -43,8 +46,8 @@ services:
     restart: unless-stopped
     ports:
       - 5173:5173
-    networks:
-      - app_network
+#    networks:
+#      - app_network
 
 networks:
   app_network:
