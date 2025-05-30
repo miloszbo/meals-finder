@@ -1,15 +1,15 @@
 <template>
-  <div class="flex flex-1">
-    <!-- Lewy panel -->
-    <div class="hidden lg:block w-1/2">
+  <div class="flex min-h-screen">
+    <!-- Left panel with image -->
+    <div class="hidden lg:block w-1/2 h-screen">
       <img
         src="/images/login_dish.png"
         alt="Delicious food"
-        class="object-cover w-full h-full min-h-full"
+        class="object-cover w-full h-full"
       />
     </div>
-    <!-- Prawy panel -->
-    <div class="flex flex-col justify-center items-center w-full lg:w-1/2 bg-[#111921]">
+    <!-- Right panel with login form -->
+    <div class="flex flex-col justify-center items-center w-full lg:w-1/2 h-screen bg-[#111921]">
       <div class="w-full max-w-md p-8 flex flex-col items-center justify-center">
         <div class="text-4xl font-bold mb-8 text-white">MealsFinder</div>
         <form class="w-full flex flex-col items-center" @submit.prevent="loginUser">
@@ -51,7 +51,6 @@
   </div>
 </template>
 
-
 <script>
 import api from '@/api/axios'
 
@@ -73,13 +72,11 @@ export default {
           password: this.form.password
         })
 
-      
         if (res.status === 200) {
           const token = res.data.token
           if (token) {
             localStorage.setItem('token', token)
           }
-
           alert('Zalogowano pomyślnie!')
           this.$router.push('/profile')
         }
