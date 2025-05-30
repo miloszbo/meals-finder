@@ -5,7 +5,7 @@
 package repository
 
 import (
-	"github.com/jackc/pgx/v5/pgtype"
+	"time"
 )
 
 type Ingredient struct {
@@ -14,11 +14,12 @@ type Ingredient struct {
 }
 
 type Recipe struct {
-	ID         int32  `json:"id"`
-	Name       string `json:"name"`
-	Synopsis   string `json:"synopsis"`
-	Time       int32  `json:"time"`
-	Difficulty int32  `json:"difficulty"`
+	ID          int32  `json:"id"`
+	Name        string `json:"name"`
+	Recipe      string `json:"recipe"`
+	Ingredients []byte `json:"ingredients"`
+	Time        int32  `json:"time"`
+	Difficulty  int32  `json:"difficulty"`
 }
 
 type RecipesIngredient struct {
@@ -52,17 +53,17 @@ type TagsType struct {
 }
 
 type User struct {
-	ID          int32            `json:"id"`
-	Username    string           `json:"username"`
-	CreatedAt   pgtype.Timestamp `json:"created_at"`
-	Passwdhash  string           `json:"passwdhash"`
-	Email       string           `json:"email"`
-	Name        string           `json:"name"`
-	Surname     string           `json:"surname"`
-	PhoneNumber string           `json:"phone_number"`
-	Age         int32            `json:"age"`
-	Sex         string           `json:"sex"`
-	Weight      int32            `json:"weight"`
-	Height      int32            `json:"height"`
-	Bmi         int32            `json:"bmi"`
+	ID          int32     `json:"id"`
+	Username    string    `json:"username"`
+	CreatedAt   time.Time `json:"created_at"`
+	Passwdhash  string    `json:"passwdhash"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Surname     string    `json:"surname"`
+	PhoneNumber string    `json:"phone_number"`
+	Age         int32     `json:"age"`
+	Sex         string    `json:"sex"`
+	Weight      int32     `json:"weight"`
+	Height      int32     `json:"height"`
+	Bmi         int32     `json:"bmi"`
 }

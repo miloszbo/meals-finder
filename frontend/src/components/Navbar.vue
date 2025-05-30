@@ -15,8 +15,8 @@ const categories = [
 </script>
 
 <template>
-  <header class="bg-[#0A1118] text-white text-base">
-    <div class="flex items-center justify-between p-4">
+  <header class="bg-[#0A1118] text-white text-base shadow-md">
+    <div class="flex items-center justify-between px-6 py-4 h-20">
       <!-- Logo -->
       <router-link to="/" class="text-5xl font-bold mb-8 hover:text-primary transition-colors duration-200">
         MealsFinder

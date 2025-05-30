@@ -11,5 +11,4 @@
 </template>
 
 <script setup>
-// Na razie bez logiki – jeśli będziesz chciał podpiąć modal, router, itp., dodamy tutaj
 </script>

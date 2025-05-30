@@ -7,6 +7,7 @@ package repository
 
 import (
 	"context"
+	"time"
 )
 
 const createUser = `-- name: CreateUser :exec
@@ -41,6 +42,43 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 		arg.Sex,
 	)
 	return err
+}
+
+const getUserData = `-- name: GetUserData :one
+SELECT username, created_at, email, name, surname, phone_number, age, sex, weight, height, BMI FROM users WHERE users.username = $1
+`
+
+type GetUserDataRow struct {
+	Username    string    `json:"username"`
+	CreatedAt   time.Time `json:"created_at"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Surname     string    `json:"surname"`
+	PhoneNumber string    `json:"phone_number"`
+	Age         int32     `json:"age"`
+	Sex         string    `json:"sex"`
+	Weight      int32     `json:"weight"`
+	Height      int32     `json:"height"`
+	Bmi         int32     `json:"bmi"`
+}
+
+func (q *Queries) GetUserData(ctx context.Context, username string) (GetUserDataRow, error) {
+	row := q.db.QueryRow(ctx, getUserData, username)
+	var i GetUserDataRow
+	err := row.Scan(
+		&i.Username,
+		&i.CreatedAt,
+		&i.Email,
+		&i.Name,
+		&i.Surname,
+		&i.PhoneNumber,
+		&i.Age,
+		&i.Sex,
+		&i.Weight,
+		&i.Height,
+		&i.Bmi,
+	)
+	return i, err
 }
 
 const loginUserWithUsername = `-- name: LoginUserWithUsername :one
