@@ -1,9 +1,10 @@
 <template>
-  <div class="flex-1 flex flex-col">
+  <div class="min-h-screen flex flex-col bg-[#181e26]">
     <Navbar />
     <TopOfTheWeek />
     <CategoryBrowser />
     <GotAFavoriteRecipe />
+    <Footer />
   </div>
 </template>
 
@@ -12,6 +13,7 @@ import Navbar from '../components/Navbar.vue'
 import TopOfTheWeek from '../components/TopOfTheWeek.vue'
 import CategoryBrowser from '../components/CategoryBrowser.vue'
 import GotAFavoriteRecipe from '../components/GotAFavoriteRecipe.vue'
+import Footer from '../components/Footer.vue'
 
 export default {
   name: 'HomePage',
@@ -19,7 +21,8 @@ export default {
     Navbar,
     TopOfTheWeek,
     CategoryBrowser,
-    GotAFavoriteRecipe
+    GotAFavoriteRecipe,
+    Footer
   }
 }
 </script>
