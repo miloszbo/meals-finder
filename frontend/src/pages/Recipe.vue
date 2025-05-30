@@ -15,22 +15,17 @@
     </div>
 
     <div>
-      <h2 class="text-xl font-semibold mb-2">Opis</h2>
-      <p class="text-gray-300">{{ recipe.description }}</p>
-    </div>
-
-    <div>
       <h2 class="text-xl font-semibold mb-2">Składniki</h2>
       <ul class="list-disc list-inside">
-        <li v-for="(item, index) in recipe.ingredients" :key="index">{{ item }}</li>
+        <li v-for="(ingredient, index) in recipe.ingredients.ingredients" :key="index">{{ ingredient.name }} {{ ingredient.amount }} {{ ingredient.unit }}</li>
       </ul>
     </div>
 
     <div>
       <h2 class="text-xl font-semibold mb-2">Sposób przygotowania</h2>
-      <ol class="list-decimal list-inside space-y-1">
-        <li v-for="(step, index) in recipe.instructions" :key="index">{{ step }}</li>
-      </ol>
+      <p class="text-sm text-gray-300">
+            {{ recipe.recipe }}
+      </p>
     </div>
   </div>
 
@@ -42,15 +37,16 @@
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
-import { getAllRecipes } from '@/api/axios'
+import { getRecipeById } from '@/api/axios'
 
 const route = useRoute()
 const recipe = ref(null)
 
 onMounted(async () => {
   try {
-    const { data } = await getAllRecipes()
-    recipe.value = data.find(r => r.id === route.params.id)
+    const { data } = await getRecipeById(route.params.id)
+    console.log(data)
+    recipe.value = data
   } catch (err) {
     console.error('Błąd wczytywania przepisu:', err)
   }
