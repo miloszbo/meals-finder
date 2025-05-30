@@ -10,7 +10,7 @@ import (
 )
 
 const filterRecipesByTagNamesAndParams = `-- name: FilterRecipesByTagNamesAndParams :many
-SELECT r.name, r.synopsis, r.time, r.difficulty
+SELECT r.name, r.time, r.difficulty
 FROM recipes r
 WHERE
   -- Min preparation time (optional)
@@ -99,7 +99,6 @@ type FilterRecipesByTagNamesAndParamsParams struct {
 
 type FilterRecipesByTagNamesAndParamsRow struct {
 	Name       string `json:"name"`
-	Synopsis   string `json:"synopsis"`
 	Time       int32  `json:"time"`
 	Difficulty int32  `json:"difficulty"`
 }
@@ -126,12 +125,7 @@ func (q *Queries) FilterRecipesByTagNamesAndParams(ctx context.Context, arg Filt
 	var items []FilterRecipesByTagNamesAndParamsRow
 	for rows.Next() {
 		var i FilterRecipesByTagNamesAndParamsRow
-		if err := rows.Scan(
-			&i.Name,
-			&i.Synopsis,
-			&i.Time,
-			&i.Difficulty,
-		); err != nil {
+		if err := rows.Scan(&i.Name, &i.Time, &i.Difficulty); err != nil {
 			return nil, err
 		}
 		items = append(items, i)

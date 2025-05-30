@@ -19,7 +19,8 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE TABLE IF NOT EXISTS recipes (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     name VARCHAR(100) NOT NULL,
-    synopsis VARCHAR(100) NOT NULL,
+    recipe VARCHAR(2500) NOT NULL,
+    ingredients JSON NOT NULL,
     time INTEGER NOT NULL, -- Preparation time in minutes
     difficulty INTEGER NOT NULL
 );
