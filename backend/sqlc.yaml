@@ -9,4 +9,9 @@ sql:
         package: "repository"
         out: "internal/repositories"
         sql_package: "pgx/v5"
+        overrides:
+          - db_type: "pg_catalog.timestamp"
+            go_type:
+              import: "time"
+              type: "Time"
 

@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/miloszbo/meals-finder/internal/models"
 	"github.com/miloszbo/meals-finder/internal/services"
 )
@@ -41,8 +42,8 @@ func (u *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 		Value:    token,
 		Expires:  time.Now().Add(24 * time.Hour),
 		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
 		Secure:   false,
-		SameSite: http.SameSiteStrictMode,
 	}
 
 	http.SetCookie(w, cookie)
@@ -67,4 +68,24 @@ func (uh *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(`{"message":"user created"}`))
+}
+
+func (uh *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	claims, ok := ctx.Value("claims").(jwt.MapClaims)
+	if !ok {
+		http.Error(w, "token was empty", http.StatusUnauthorized)
+	}
+
+	user, err := uh.UserService.GetUser(ctx, claims["sub"].(string))
+
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "user was not found", http.StatusInternalServerError)
+	}
+
+	jsonUser, _ := json.Marshal(user)
+
+	w.WriteHeader(http.StatusOK)
+	w.Write(jsonUser)
 }
