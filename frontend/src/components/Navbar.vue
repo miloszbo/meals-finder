@@ -1,68 +1,83 @@
 <template>
-  <header class="bg-[#0A1118] text-white text-base">
-    <div class="flex items-center justify-between p-4">
+  <header class="bg-[#0A1118] text-white text-base shadow-md">
+    <div class="flex items-center justify-between px-6 py-4 h-20">
       <!-- Logo -->
-        <router-link to="/" class="text-5xl font-bold mb-8 hover:text-primary transition-colors duration-200">
-          MealsFinder
-        </router-link>
-
-      <!-- Pasek wyszukiwania -->
-      <div class="hidden md:flex justify-center mx-4" style="width: 1088px; height: 48px;">
-        <div class="flex w-full bg-[#1a1f26] rounded-full overflow-hidden h-full">
-          <input
-            type="text"
-            placeholder="Search..."
-            class="w-full bg-transparent text-white px-4 outline-none"
-          />
-          <button class="px-4">
-            <i class="fas fa-search"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- Ikony po prawej -->
-      <div class="flex items-center gap-4 text-lg">
-       <router-link to="/browser" title="Recipes">
-      <i class="fa-solid fa-clipboard-list cursor-pointer hover:text-gray-300"></i>
-       </router-link>
-
-      
-     <!--
-     <a href="/favorites" title="Favorites">
-     <i class="fa-solid fa-heart cursor-pointer hover:text-gray-300"></i>
-      </a>
-     -->
-      <router-link to="/login" title="Profile">
-        <i class="fa-solid fa-user cursor-pointer hover:text-gray-300"></i>
+      <router-link
+        to="/"
+        class="text-6xl font-bold hover:text-primary transition-colors duration-200"
+        style="margin-top: 4px;"
+      >
+        MealsFinder
       </router-link>
 
+      <!-- Ikony po prawej -->
+      <div class="flex items-center gap-6 text-2xl relative">
+        <!-- Przepisy -->
+        <router-link to="/browser" title="Recipes">
+          <i class="fa-solid fa-clipboard-list cursor-pointer hover:text-gray-300"></i>
+        </router-link>
+
+        <!-- Profil z dropdownem -->
+        <div
+          class="relative"
+          @mouseenter="showDropdown = true"
+          @mouseleave="showDropdown = false"
+        >
+          <!-- Ikona – przekierowuje -->
+          <router-link
+            to="/profile?tab=profile"
+            title="Profile"
+            class="cursor-pointer hover:text-gray-300"
+          >
+            <i class="fa-solid fa-user"></i>
+          </router-link>
+
+          <!-- Dropdown -->
+          <div
+            v-show="showDropdown"
+            class="absolute top-full left-1/2 -translate-x-1/2 bg-base-100 text-white border border-base-content rounded shadow-md w-40 z-50"
+          >
+            <router-link
+              to="/profile?tab=settings"
+              class="block px-3 py-1.5 text-sm hover:bg-base-300"
+            >
+              Dane osobowe
+            </router-link>
+            <router-link
+              to="/profile?tab=privacy"
+              class="block px-3 py-1.5 text-sm hover:bg-base-300"
+            >
+              Prywatność
+            </router-link>
+            <router-link
+              to="/profile?tab=security"
+              class="block px-3 py-1.5 text-sm hover:bg-base-300"
+            >
+              Bezpieczeństwo
+            </router-link>
+            <router-link
+              to="/profile?tab=sharing"
+              class="block px-3 py-1.5 text-sm hover:bg-base-300"
+            >
+              Udostępnianie
+            </router-link>
+            <router-link
+              to="/profile?tab=payments"
+              class="block px-3 py-1.5 text-sm hover:bg-base-300"
+            >
+              Płatności
+            </router-link>
+          </div>
+        </div>
       </div>
     </div>
-
-    <!-- Kategorie -->
-    <nav class="bg-[#0A1118] border-t border-[#1f2a34] flex flex-wrap justify-center gap-6 px-4 py-2">
-      <a
-        v-for="cat in categories"
-        :key="cat"
-        :href="`/categories/${cat.toLowerCase().replace(/ /g, '-')}`"
-        class="text-white"
-        style="font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 24px; line-height: 100%; text-align: center; vertical-align: middle;"
-      >
-        {{ cat }}
-      </a>
-    </nav>
   </header>
 </template>
 
 <script setup>
-const categories = [
-  "Europe",
-  "Asian",
-  "North American",
-  "South American",
-  "African",
-  "Oceanian"
-];
+import { ref } from 'vue'
+
+const showDropdown = ref(false)
 </script>
 
 <style scoped>
