@@ -14,4 +14,10 @@ export const getAllRecipes = (params) =>
 export const getRecipeById = (id) =>
   api.get(`/re/${id}`)
 
+export const verifyUser = () =>
+  api.get('/user/verify') 
+
+export const logoutUser = () =>
+  api.post('/user/logout')
+
 export default api
