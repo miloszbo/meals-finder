@@ -4,11 +4,9 @@
   </div>
 
   <div class="flex min-h-screen bg-base-200 text-white">
-    <!-- Sidebar -->
     <aside class="w-64 bg-base-100 p-4 border-r border-base-content overflow-y-auto">
       <h2 class="text-xl font-bold mb-4">Search by tags</h2>
 
-      <!-- Input + Dropdown -->
       <div class="relative" ref="dropdownWrapper">
         <input
           type="text"
@@ -32,17 +30,16 @@
         </div>
       </div>
 
-      <!-- Wybrane tagi -->
-      <div class="mt-4" v-if="selectedTags.length">
+      <div class="mt-4" v-if="Object.keys(selectedTags).length">
         <h3 class="text-md font-semibold mb-2">Selected Tags:</h3>
         <div class="flex flex-wrap gap-2">
           <span
-            v-for="(tag, index) in selectedTags"
-            :key="index"
-            @click="removeTag(tag)"
+            v-for="(value, category) in selectedTags"
+            :key="category"
+            @click="removeTag(value)"
             class="bg-primary text-white rounded-full px-4 py-1 text-sm font-semibold cursor-pointer hover:bg-red-500"
           >
-            {{ tag }}
+            {{ value }}
           </span>
         </div>
       </div>
@@ -75,48 +72,83 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import Navbar from '@/components/Navbar.vue'
+import { getAllRecipes } from '@/api/axios'
+
+const route = useRoute()
+const router = useRouter()
 
 const categories = ref([])
 const recipes = ref([])
-const selectedTags = ref([])
 const filterQuery = ref('')
 const dropdownVisible = ref(false)
 const dropdownWrapper = ref(null)
 
+const selectedTags = ref({})
+
+const tagToCategory = computed(() => {
+  const map = {}
+  categories.value.forEach(cat => {
+    cat.tags.forEach(tag => {
+      map[tag] = cat.name.toLowerCase().replace(/\s/g, '_')
+    })
+  })
+  return map
+})
+
 const allTags = computed(() =>
-  categories.value.flatMap(category => category.tags)
+  categories.value.flatMap(cat => cat.tags)
 )
 
 const filteredTags = computed(() =>
-  allTags.value
-    .filter(tag =>
-      tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
-      !selectedTags.value.includes(tag)
-    )
-    .slice(0, 10)
+  allTags.value.filter(tag =>
+    tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
+    !Object.values(selectedTags.value).includes(tag)
+  ).slice(0, 10)
 )
 
-const filteredRecipes = computed(() => {
-  if (selectedTags.value.length === 0) return []
-  return recipes.value.filter(recipe =>
-    Array.isArray(recipe.tags) &&
-    selectedTags.value.every(tag => recipe.tags.includes(tag))
-  )
-})
+const filteredRecipes = computed(() => recipes.value)
+
+function updateUrlWithTags() {
+  router.replace({ query: { ...selectedTags.value } })
+}
+
+async function fetchRecipes() {
+  try {
+    const { data } = await getAllRecipes(selectedTags.value)
+    recipes.value = data
+  } catch (err) {
+    console.error('Błąd pobierania przepisów:', err)
+  }
+}
 
 function addTag(tag) {
-  if (!selectedTags.value.includes(tag)) {
-    selectedTags.value.push(tag)
+  const category = tagToCategory.value[tag]
+  if (!category) return
+
+  selectedTags.value = {
+    ...selectedTags.value,
+    [category]: tag
   }
+
+  updateUrlWithTags()
   filterQuery.value = ''
   dropdownVisible.value = false
+  fetchRecipes()
 }
 
 function removeTag(tag) {
-  selectedTags.value = selectedTags.value.filter(t => t !== tag)
+  const entry = Object.entries(selectedTags.value).find(([_, v]) => v === tag)
+  if (entry) {
+    const [category] = entry
+    delete selectedTags.value[category]
+    selectedTags.value = { ...selectedTags.value }
+    updateUrlWithTags()
+    fetchRecipes()
+  }
 }
 
 function handleClickOutside(event) {
@@ -129,30 +161,15 @@ function handleClickOutside(event) {
 
 onMounted(async () => {
   try {
-    const [tagsRes, recipesRes] = await Promise.all([
-      axios.get('/tags.json'),
-      axios.get('/recipes.json')
-    ])
+    const tagsRes = await axios.get('/tags.json')
     categories.value = tagsRes.data
-    recipes.value = recipesRes.data
+
+    selectedTags.value = { ...route.query }
+    await fetchRecipes()
   } catch (err) {
     console.error('Błąd ładowania danych:', err)
   }
 
   document.addEventListener('click', handleClickOutside)
 })
-
-onBeforeUnmount(() => {
-  document.removeEventListener('click', handleClickOutside)
-})
 </script>
-
-<style scoped>
-/* Ograniczenie opisu do 2 linii */
-.line-clamp-2 {
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  -webkit-box-orient: vertical;
-  overflow: hidden;
-}
-</style>
