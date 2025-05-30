@@ -6,6 +6,8 @@ package repository
 
 import (
 	"time"
+
+	"github.com/miloszbo/meals-finder/internal/models"
 )
 
 type Ingredient struct {
@@ -14,12 +16,12 @@ type Ingredient struct {
 }
 
 type Recipe struct {
-	ID          int32  `json:"id"`
-	Name        string `json:"name"`
-	Recipe      string `json:"recipe"`
-	Ingredients []byte `json:"ingredients"`
-	Time        int32  `json:"time"`
-	Difficulty  int32  `json:"difficulty"`
+	ID          int32                  `json:"id"`
+	Name        string                 `json:"name"`
+	Recipe      string                 `json:"recipe"`
+	Ingredients models.IngredientsJson `json:"ingredients"`
+	Time        int32                  `json:"time"`
+	Difficulty  int32                  `json:"difficulty"`
 }
 
 type RecipesIngredient struct {
