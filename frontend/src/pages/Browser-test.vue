@@ -107,7 +107,7 @@ const filteredTags = computed(() =>
   allTags.value.filter(tag =>
     tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
     !Object.values(selectedTags.value).includes(tag)
-  ).slice(0, 10)
+  )
 )
 
 const filteredRecipes = computed(() => recipes.value)

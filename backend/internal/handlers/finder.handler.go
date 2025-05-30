@@ -52,7 +52,7 @@ func (f *FinderHandler) FindRecipes(w http.ResponseWriter, r *http.Request) {
 	limit64, err := strconv.ParseInt(r.URL.Query().Get("limit"), 10, 32)
 	limit := int32(limit64)
 	if err != nil && limit < 2 {
-		limit = 10
+		limit = 100
 	}
 
 	offset := (page - 1) * limit
