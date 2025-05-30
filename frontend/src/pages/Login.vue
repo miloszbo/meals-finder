@@ -9,7 +9,7 @@
       />
     </div>
     <!-- Right panel with login form -->
-    <div class="flex flex-col justify-center items-center w-full lg:w-1/2 h-screen bg-[#111921]">
+    <div class="flex flex-col justify-center items-center w-full lg:w-1/2 h-screen bg-[#060606]">
       <div class="w-full max-w-md p-8 flex flex-col items-center justify-center">
         <div class="text-4xl font-bold mb-8 text-white">MealsFinder</div>
         <form class="w-full flex flex-col items-center" @submit.prevent="loginUser">
@@ -17,7 +17,7 @@
             <input
               type="text"
               placeholder="Email"
-              class="input input-bordered w-full bg-[#232a34] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="input input-bordered w-full bg-[#060606] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500"
               v-model="form.login"
               required
             />
@@ -26,7 +26,7 @@
             <input
               type="password"
               placeholder="Password"
-              class="input input-bordered w-full bg-[#232a34] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500"
+              class="input input-bordered w-full bg-[#060606] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500"
               v-model="form.password"
               required
             />

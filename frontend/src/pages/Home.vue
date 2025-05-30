@@ -1,5 +1,5 @@
 <template>
-  <div class="min-h-screen flex flex-col bg-[#181e26]">
+  <div class="min-h-screen flex flex-col bg-[#060606]">
     <Navbar />
     <TopOfTheWeek />
     <CategoryBrowser />
