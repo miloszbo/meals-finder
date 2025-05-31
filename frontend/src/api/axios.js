@@ -14,4 +14,10 @@ export const getAllRecipes = (tags) =>
 export const getRecipeById = (id) =>
   API.get(`/recipes/${id}`)
 
+export const verifyUser = () =>
+  api.get('/user/verify') 
+
+export const logoutUser = () =>
+  api.post('/user/logout')
+
 export default api

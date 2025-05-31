@@ -5,7 +5,8 @@ import RegisterPage from '@/pages/Register.vue'
 import NavPage from '@/pages/Nav.vue'
 import Profile from '@/pages/Profile.vue'
 import BrowserTest from '@/pages/Browser-test.vue'
-import Recipe from '@/pages/Recipe.vue' // 🔹 zmieniona nazwa
+import Recipe from '@/pages/Recipe.vue'
+import { verifyUser } from '@/api/axios' 
 
 const routes = [
   { path: '/', name: 'Root', component: HomePage },
@@ -13,14 +14,27 @@ const routes = [
   { path: '/home', name: 'Home', component: HomePage },
   { path: '/login', name: 'Login', component: LoginPage },
   { path: '/register', name: 'Register', component: RegisterPage },
-  { path: '/profile', name: 'Profile', component: Profile },
-  { path: '/browser', name: 'CategoryBrowser', component: BrowserTest },
-  { path: '/recipe/:id', name: 'Recipe', component: Recipe } // 🔹 zmieniona nazwa
+  { path: '/profile', name: 'Profile', component: Profile, meta: { requiresAuth: true } }, // 🔒
+  { path: '/browser', name: 'CategoryBrowser', component: BrowserTest, meta: { requiresAuth: true } }, // 🔒
+  { path: '/recipe/:id', name: 'Recipe', component: Recipe }
 ]
 
 const router = createRouter({
   history: createWebHistory(),
   routes
+})
+
+router.beforeEach(async (to, from, next) => {
+  if (to.meta.requiresAuth) {
+    try {
+      await verifyUser()
+      next()
+    } catch {
+      next('/login')
+    }
+  } else {
+    next()
+  }
 })
 
 export default router
