@@ -16,7 +16,7 @@ const routes = [
   { path: '/register', name: 'Register', component: RegisterPage },
   { path: '/profile', name: 'Profile', component: Profile, meta: { requiresAuth: true } }, // 🔒
   { path: '/browser', name: 'CategoryBrowser', component: BrowserTest, meta: { requiresAuth: true } }, // 🔒
-  { path: '/recipe/:id', name: 'Recipe', component: Recipe }
+  { path: '/re/:id', name: 'Recipe', component: Recipe } // 🔹 zmieniona nazwa
 ]
 
 const router = createRouter({

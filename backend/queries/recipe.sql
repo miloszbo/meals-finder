@@ -1,5 +1,5 @@
 -- name: FilterRecipesByTagNamesAndParams :many
-SELECT r.name, r.time, r.difficulty
+SELECT r.id, r.name, r.time, r.difficulty
 FROM recipes r
 WHERE
   -- Min preparation time (optional)
@@ -69,3 +69,6 @@ WHERE
   ))
 
 ORDER BY r.id LIMIT @recipes_limit::int OFFSET @recipes_offset::int;
+
+-- name: GetRecipeWithId :one
+SELECT * FROM recipes WHERE id = $1;

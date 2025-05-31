@@ -6,14 +6,14 @@
       <div
         v-for="recipe in recipes"
         :key="recipe.title"
-        class="bg-[#111921] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col"
+        class="bg-[#060606] rounded-xl overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-200 flex flex-col"
       >
         <img :src="recipe.image" :alt="recipe.title" class="w-full h-40 object-cover" />
         <div class="p-4 flex flex-col flex-1">
           <h3 class="text-lg font-semibold mb-1 text-white">{{ recipe.title }}</h3>
           <p class="text-sm text-gray-400 mb-4 flex-1">{{ recipe.description }}</p>
           <button
-            class="mt-auto inline-block px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700 transition"
+            class="w-full mt-4 py-2 text-base font-semibold rounded-full bg-[#605DFF] text-white hover:bg-[#4947c5] transition"
           >
             View Recipe
           </button>

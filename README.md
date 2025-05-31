@@ -8,6 +8,7 @@ App for finding recipes.
 ### Backend Developers
 - Milosz Borowiecki
 - Karol Chruzik
+- Wiktor Chmiest
 ### Frontend Developers
 - Kacper Gorlewicz
 - Marcin Dulik

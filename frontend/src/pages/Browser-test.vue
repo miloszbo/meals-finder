@@ -51,7 +51,7 @@
         <router-link
           v-for="recipe in filteredRecipes"
           :key="recipe.id"
-          :to="`/recipe/${recipe.id}`"
+          :to="`/re/${recipe.id}`"
           class="bg-base-100 p-4 rounded-box shadow hover:shadow-lg transition block"
         >
           <div class="text-sm font-bold mb-1">
@@ -72,7 +72,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { reactive, ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import Navbar from '@/components/Navbar.vue'
@@ -82,7 +82,7 @@ const route = useRoute()
 const router = useRouter()
 
 const categories = ref([])
-const recipes = ref([])
+const recipes = reactive([])
 const filterQuery = ref('')
 const dropdownVisible = ref(false)
 const dropdownWrapper = ref(null)
@@ -118,6 +118,7 @@ function updateUrlWithTags() {
 
 async function fetchRecipes() {
   try {
+    console.log(route.query)
     const { data } = await getAllRecipes(selectedTags.value)
     recipes.value = data
   } catch (err) {

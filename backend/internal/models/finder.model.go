@@ -14,3 +14,13 @@ type RecipesFinderParams struct {
 	Limit         int32
 	Offset        int32
 }
+
+type Ingredient struct {
+	Name   string `json:"name"`
+	Amount int32  `json:"amount"`
+	Unit   string `json:"unit"`
+}
+
+type IngredientsJson struct {
+	Ingredients []Ingredient `json:"ingredients"`
+}

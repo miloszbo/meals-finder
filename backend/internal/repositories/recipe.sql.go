@@ -10,7 +10,7 @@ import (
 )
 
 const filterRecipesByTagNamesAndParams = `-- name: FilterRecipesByTagNamesAndParams :many
-SELECT r.name, r.time, r.difficulty
+SELECT r.id, r.name, r.time, r.difficulty
 FROM recipes r
 WHERE
   -- Min preparation time (optional)
@@ -98,6 +98,7 @@ type FilterRecipesByTagNamesAndParamsParams struct {
 }
 
 type FilterRecipesByTagNamesAndParamsRow struct {
+	ID         int32  `json:"id"`
 	Name       string `json:"name"`
 	Time       int32  `json:"time"`
 	Difficulty int32  `json:"difficulty"`
@@ -125,7 +126,12 @@ func (q *Queries) FilterRecipesByTagNamesAndParams(ctx context.Context, arg Filt
 	var items []FilterRecipesByTagNamesAndParamsRow
 	for rows.Next() {
 		var i FilterRecipesByTagNamesAndParamsRow
-		if err := rows.Scan(&i.Name, &i.Time, &i.Difficulty); err != nil {
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Time,
+			&i.Difficulty,
+		); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
@@ -134,4 +140,22 @@ func (q *Queries) FilterRecipesByTagNamesAndParams(ctx context.Context, arg Filt
 		return nil, err
 	}
 	return items, nil
+}
+
+const getRecipeWithId = `-- name: GetRecipeWithId :one
+SELECT id, name, recipe, ingredients, time, difficulty FROM recipes WHERE id = $1
+`
+
+func (q *Queries) GetRecipeWithId(ctx context.Context, id int32) (Recipe, error) {
+	row := q.db.QueryRow(ctx, getRecipeWithId, id)
+	var i Recipe
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Recipe,
+		&i.Ingredients,
+		&i.Time,
+		&i.Difficulty,
+	)
+	return i, err
 }

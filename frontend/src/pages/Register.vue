@@ -10,7 +10,7 @@
       />
     </div>
     <!-- Right panel (form) -->
-    <div class="flex flex-col justify-center items-center w-full lg:w-1/2 h-screen bg-[#111921]">
+    <div class="flex flex-col justify-center items-center w-full lg:w-1/2 h-screen bg-gradient-to-r from-[#060606] to-white to-900%">
       <div class="w-full max-w-md p-8 flex flex-col items-center justify-center">
         <router-link to="/home" class="text-4xl font-bold mb-8 text-white hover:text-primary transition-colors duration-200">
           MealsFinder
@@ -19,16 +19,16 @@
           <!-- Step 1 -->
           <template v-if="step === 1">
             <div class="form-control mb-4 w-full">
-              <input type="text" placeholder="Username" class="input input-bordered w-full bg-[#232a34] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="form.username" />
+              <input type="text" placeholder="Username" class="input input-bordered w-full bg-[#060606] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="form.username" />
             </div>
             <div class="form-control mb-4 w-full">
-              <input type="email" placeholder="Email" class="input input-bordered w-full bg-[#232a34] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="form.email" />
+              <input type="email" placeholder="Email" class="input input-bordered w-full bg-[#060606] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="form.email" />
             </div>
             <div class="form-control mb-4 w-full">
-              <input type="password" placeholder="Password" class="input input-bordered w-full bg-[#232a34] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="form.passwd" />
+              <input type="password" placeholder="Password" class="input input-bordered w-full bg-[#060606] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="form.passwd" />
             </div>
             <div class="form-control mb-4 w-full">
-              <input type="password" placeholder="Confirm Password" class="input input-bordered w-full bg-[#232a34] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="form.confirmpasswd" />
+              <input type="password" placeholder="Confirm Password" class="input input-bordered w-full bg-[#060606] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="form.confirmpasswd" />
             </div>
             <div class="form-control mb-4 w-full flex justify-center">
               <button type="button" class="btn btn-primary w-full" @click="step = 2">Next</button>
@@ -37,13 +37,13 @@
           <!-- Step 2 -->
           <template v-else>
             <div class="form-control mb-4 w-full">
-              <input type="number" placeholder="Phone Number" class="input input-bordered w-full bg-[#232a34] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="form.phoneNumber" />
+              <input type="number" placeholder="Phone Number" class="input input-bordered w-full bg-[#060606] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model="form.phoneNumber" />
             </div>
             <div class="form-control mb-4 w-full">
-              <input type="number" placeholder="Age" class="input input-bordered w-full bg-[#232a34] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model.number="form.age" min="0"/>
+              <input type="number" placeholder="Age" class="input input-bordered w-full bg-[#060606] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500" v-model.number="form.age" min="0"/>
             </div>
             <div class="form-control mb-4 w-full">
-              <select v-model="form.sex" class="select select-bordered w-full bg-[#232a34] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500">
+              <select v-model="form.sex" class="select select-bordered w-full bg-[#060606] text-white border border-[#3d4451] focus:outline-none focus:ring-2 focus:ring-blue-500">
                 <option disabled value="">Select gender</option>
                 <option value="Mężczyzna">Male</option>
                 <option value="Kobieta">Female</option>

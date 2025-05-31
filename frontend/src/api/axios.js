@@ -8,11 +8,11 @@ const api = axios.create({
     withCredentials:true,
 })
 
-export const getAllRecipes = (tags) =>
-  API.get('/recipes', tags ? { params: { tags } } : {})
+export const getAllRecipes = (params) =>
+  api.get('/browser', { params })
 
 export const getRecipeById = (id) =>
-  API.get(`/recipes/${id}`)
+  api.get(`/re/${id}`)
 
 export const verifyUser = () =>
   api.get('/user/verify') 
