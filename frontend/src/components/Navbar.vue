@@ -9,7 +9,10 @@ const router = useRouter()
 
 onMounted(async () => {
   try {
-    await verifyUser()
+    const resp = await verifyUser()
+    if (resp.status == 401) {
+      throw new Error("unauthorized")
+    }
     isLoggedIn.value = true
   } catch {
     isLoggedIn.value = false
@@ -24,7 +27,7 @@ const logout = async () => {
   try {
     await logoutUser()
     isLoggedIn.value = false
-    router.push('/login')
+    router.push('/home')
   } catch (err) {
     console.error('Błąd przy wylogowaniu:', err)
   }
@@ -67,17 +70,5 @@ const logout = async () => {
         </div>
       </div>
     </div>
-
-    <nav class="bg-[#060606] border-t border-[#1f2a34] flex flex-wrap justify-center gap-6 px-4 py-2">
-      <a
-        v-for="cat in categories"
-        :key="cat"
-        :href="`/categories/${cat.toLowerCase().replace(/ /g, '-')}`"
-        class="text-white"
-        style="font-family: 'Roboto', sans-serif; font-weight: 700; font-size: 24px;"
-      >
-        {{ cat }}
-      </a>
-    </nav>
   </header>
 </template>
