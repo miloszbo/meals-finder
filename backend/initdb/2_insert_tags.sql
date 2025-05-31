@@ -126,6 +126,6 @@ INSERT INTO tags (name, type_id) VALUES ('Sezam', 4);
 INSERT INTO tags (name, type_id) VALUES ('Gorczyca', 4);
 INSERT INTO tags (name, type_id) VALUES ('Lupina', 4);
 INSERT INTO tags (name, type_id) VALUES ('Seler', 4);
-INSERT INTO tags (name, type_id) VALUES ('Siarczyny i dodatki sztuczne(np. barwniki)', 4);
+INSERT INTO tags (name, type_id) VALUES ('Siarczyny i dodatki sztuczne', 4);
 INSERT INTO tags (name, type_id) VALUES ('lekkostrawne', 6);
 INSERT INTO tags (name, type_id) VALUES ('tanie', 6);

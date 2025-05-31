@@ -27,14 +27,25 @@ services:
       POSTGRES_DB: ${DB_DATABASE}
       POSTGRES_USER: ${DB_USERNAME}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
+    volumes:
+      - ./backend/initdb:/docker-entrypoint-initdb.d
     ports:
       - ${DB_PORT}:5432
     healthcheck:
       test: ["CMD-SHELL", "sh -c 'pg_isready -U ${DB_USERNAME} -d ${DB_DATABASE}'"]
-      interval: 5s
-      timeout: 5s
+      interval: 15s
+      timeout: 15s
       retries: 3
       start_period: 15s
+    networks:
+      - app_network
+  pgadmin:
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: some@example.com
+      PGADMIN_DEFAULT_PASSWORD: password1234
+    ports:
+      - "80:80"
     networks:
       - app_network
   frontend:
