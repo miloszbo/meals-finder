@@ -10,7 +10,7 @@
       />
     </div>
     <!-- Right panel (form) -->
-    <div class="flex flex-col justify-center items-center w-full lg:w-1/2 h-screen bg-#060606]">
+    <div class="flex flex-col justify-center items-center w-full lg:w-1/2 h-screen bg-gradient-to-r from-[#060606] to-white to-900%">
       <div class="w-full max-w-md p-8 flex flex-col items-center justify-center">
         <router-link to="/home" class="text-4xl font-bold mb-8 text-white hover:text-primary transition-colors duration-200">
           MealsFinder
