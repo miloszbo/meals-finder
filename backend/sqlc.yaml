@@ -14,4 +14,9 @@ sql:
             go_type:
               import: "time"
               type: "Time"
+          - column: "recipes.ingredients"
+            go_type:
+              import: "github.com/miloszbo/meals-finder/internal/models"
+              type: IngredientsJson
+
 

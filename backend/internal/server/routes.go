@@ -22,12 +22,19 @@ func SetupRoutes() http.Handler {
 	mux.HandleFunc("POST /user/register", userHandler.CreateUser)
 
 	stack := middlewares.CreateStack(
-		middlewares.CorsMiddleware,
 		middlewares.Logging,
+		middlewares.CorsMiddleware,
 	)
+
+	finderService := services.NewBaseFinderService(conn)
+	finderHandler := handlers.FinderHandler{
+		FinderService: &finderService,
+	}
 
 	authMux := http.NewServeMux()
 	authMux.HandleFunc("GET /profile", userHandler.GetProfile)
+	mux.HandleFunc("GET /browser", finderHandler.FindRecipes)
+	mux.HandleFunc("GET /re/{id}", finderHandler.GetRecipe)
 
 	mux.Handle("/", middlewares.Authentication(authMux))
 
