@@ -16,7 +16,7 @@ const routes = [
   { path: '/register', name: 'Register', component: RegisterPage },
   { path: '/profile', name: 'Profile', component: Profile, meta: { requiresAuth: true } }, // 🔒
   { path: '/browser', name: 'CategoryBrowser', component: BrowserTest, meta: { requiresAuth: true } }, // 🔒
-  { path: '/re/:id', name: 'Recipe', component: Recipe } // 🔹 zmieniona nazwa
+  { path: '/re/:id', name: 'Recipe', component: Recipe, meta: { requiresAuth: true } } // 🔹 zmieniona nazwa
 ]
 
 const router = createRouter({
@@ -27,7 +27,10 @@ const router = createRouter({
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     try {
-      await verifyUser()
+      const resp = await verifyUser()
+      if (resp.status == 401) {
+        throw new Error("unauthorized")
+      }
       next()
     } catch {
       next('/login')

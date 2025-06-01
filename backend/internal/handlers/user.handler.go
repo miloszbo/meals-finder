@@ -5,7 +5,6 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
-	"time"
 
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/miloszbo/meals-finder/internal/models"
@@ -40,8 +39,9 @@ func (u *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	cookie := &http.Cookie{
 		Name:     "auth_token",
 		Value:    token,
-		Expires:  time.Now().Add(24 * time.Hour),
+		MaxAge:   24 * 3600,
 		HttpOnly: true,
+		Path:     "/",
 		SameSite: http.SameSiteLaxMode,
 		Secure:   false,
 	}
@@ -49,6 +49,18 @@ func (u *UserHandler) LoginUser(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, cookie)
 
 	w.WriteHeader(http.StatusOK)
+}
+
+func (uh *UserHandler) Logout(w http.ResponseWriter, r *http.Request) {
+	cookie := &http.Cookie{
+		Name:     "auth_token",
+		MaxAge:   0,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteLaxMode,
+		Secure:   false,
+	}
+	http.SetCookie(w, cookie)
 }
 
 func (uh *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -68,6 +80,10 @@ func (uh *UserHandler) CreateUser(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusCreated)
 	w.Write([]byte(`{"message":"user created"}`))
+}
+
+func (uh *UserHandler) IsLogged(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusOK)
 }
 
 func (uh *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {

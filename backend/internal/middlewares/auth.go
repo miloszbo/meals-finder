@@ -20,13 +20,25 @@ func writeUnauthed(w http.ResponseWriter) {
 func Authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		jwtToken, err := r.Cookie("auth_token")
-
+		if err != nil {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
+		if jwtToken == nil {
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
+			return
+		}
 		token, err := jwt.Parse(jwtToken.Value, func(t *jwt.Token) (any, error) {
+
 			if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 				return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 			}
 			return key, nil
 		})
+		if token == nil {
+			writeUnauthed(w)
+			return
+		}
 		if err != nil && !token.Valid {
 			log.Println("Parse error: " + err.Error())
 			if !token.Valid {
@@ -35,7 +47,6 @@ func Authentication(next http.Handler) http.Handler {
 			writeUnauthed(w)
 			return
 		}
-
 		if claims, ok := token.Claims.(jwt.MapClaims); ok {
 			ctx := context.WithValue(r.Context(), "claims", claims)
 			next.ServeHTTP(w, r.WithContext(ctx))
