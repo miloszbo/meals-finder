@@ -105,3 +105,31 @@ func (uh *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 	w.Write(jsonUser)
 }
+
+func (uh *UserHandler) UpdateUserSettings(w http.ResponseWriter, r *http.Request) {
+	var req models.UpdateUserSettingsRequest
+
+	// Decode JSON input
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		log.Println(err.Error())
+		http.Error(w, ErrBadRequest.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Validate request
+	if err := req.Validate(); err != nil {
+		http.Error(w, ErrBadRequest.Error(), http.StatusBadRequest)
+		return
+	}
+
+	// Call service
+	if err := uh.UserService.UpdateUserSettings(r.Context(), &req); err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), StatusFromError(err))
+		return
+	}
+
+	// Success
+	w.WriteHeader(http.StatusOK)
+	w.Write([]byte(`{"message":"user settings updated"}`))
+}

@@ -73,6 +73,12 @@ CREATE TABLE IF NOT EXISTS recipes_tags (
     FOREIGN KEY (tag_id) REFERENCES tags(id)
 );
 
+-- Table: users_tags
+CREATE TABLE IF NOT EXISTS users_tags (
+    username VARCHAR(40) NOT NULL,
+    tag_id INTEGER NOT NULL
+);
+
 -- Indexes
 CREATE INDEX idx_reviews_recipe_id ON reviews (recipe_id);
 CREATE INDEX idx_recipes_ingredients_recipe_id ON recipes_ingredients (recipe_id);
