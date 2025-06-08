@@ -18,5 +18,3 @@ sql:
             go_type:
               import: "github.com/miloszbo/meals-finder/internal/models"
               type: IngredientsJson
-
-
