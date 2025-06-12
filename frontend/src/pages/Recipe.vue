@@ -48,7 +48,7 @@ onMounted(async () => {
     console.log(data)
     recipe.value = data
   } catch (err) {
-    console.error('Błąd wczytywania przepisu:', err)
+    console.error('Błąd ładowania:', err)
   }
 })
 </script>

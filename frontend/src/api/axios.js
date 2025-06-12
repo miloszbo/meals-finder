@@ -20,4 +20,11 @@ export const verifyUser = () =>
 export const logoutUser = () =>
   api.get('/logout')
 
+export const addRecipe = (formData) =>
+  api.post('/recipes', formData, {
+    headers: {
+      'Content-Type': 'multipart/form-data'
+    }
+  })
+
 export default api
