@@ -11,7 +11,9 @@
     <!-- Right panel with login form -->
     <div class="flex flex-col justify-center items-center w-full lg:w-1/2 h-screen bg-gradient-to-r from-[#060606] to-white to-900%">
       <div class="w-full max-w-md p-8 flex flex-col items-center justify-center">
-        <div class="text-4xl font-bold mb-8 text-white">MealsFinder</div>
+        <router-link to="/home" class="text-4xl font-bold mb-8 text-white hover:text-primary transition-colors duration-200">
+          MealsFinder
+        </router-link>
         <form class="w-full flex flex-col items-center" @submit.prevent="loginUser">
           <div class="form-control mb-4 w-full">
             <input
@@ -41,9 +43,11 @@
               <span>Don't have an account?</span>
               <router-link to="/register" class="ml-1 text-[#466aff] hover:underline">Sign up</router-link>
             </div>
+            <!--
             <div class="mt-2 font-bold text-xs hover:underline cursor-pointer">
               Forgot password?
             </div>
+            -->
           </div>
         </form>
       </div>
