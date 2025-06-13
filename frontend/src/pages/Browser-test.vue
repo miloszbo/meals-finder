@@ -15,20 +15,40 @@
           class="input input-sm input-bordered w-full mb-2"
           @focus="dropdownVisible = true"
         />
-        <div
-          v-if="dropdownVisible && filteredTags.length > 0"
-          class="absolute z-10 bg-base-100 border border-base-content mt-1 w-full max-h-48 overflow-y-auto rounded-box shadow"
-        >
-          <div
-            v-for="tag in filteredTags"
-            :key="tag"
-            @click="addTag(tag)"
-            class="px-4 py-2 hover:bg-base-300 cursor-pointer text-sm"
-          >
-            {{ tag }}
-          </div>
-        </div>
+<div
+  v-if="dropdownVisible"
+  class="absolute z-10 bg-base-100 border border-base-content mt-1 w-full rounded-box shadow max-h-96 overflow-y-auto"
+>
+  <div
+    v-for="category in filteredCategories"
+    :key="category.name"
+    class="border-b px-4 py-2"
+  >
+    <div
+      @click="toggleCategory(category.name)"
+      class="cursor-pointer font-semibold hover:text-primary flex justify-between items-center"
+    >
+      {{ category.name }}
+      <span class="text-xs">{{ expandedCategory === category.name ? '▲' : '▼' }}</span>
+    </div>
+
+    <!-- rozwijane tagi -->
+    <div
+      v-if="expandedCategory === category.name"
+      class="mt-2 max-h-40 overflow-y-auto pl-2 space-y-1"
+    >
+      <div
+        v-for="tag in limitedTags(category.tags)"
+        :key="tag"
+        @click.stop="addTag(tag)"
+        class="px-3 py-1 hover:bg-base-300 rounded cursor-pointer text-sm"
+      >
+        {{ tag }}
       </div>
+    </div>
+  </div>
+</div>
+    </div>
 
       <div class="mt-4" v-if="Object.keys(selectedTags).length">
         <h3 class="text-md font-semibold mb-2">Selected Tags:</h3>
@@ -99,6 +119,24 @@ const tagToCategory = computed(() => {
   return map
 })
 
+const filteredCategories = computed(() =>
+  categories.value.filter(cat =>
+    cat.tags.some(tag =>
+      tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
+      !Object.values(selectedTags.value).includes(tag)
+    )
+  )
+)
+
+function limitedTags(tags) {
+  return tags
+    .filter(tag =>
+      tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
+      !Object.values(selectedTags.value).includes(tag)
+    )
+    .slice(0, 10)
+}
+
 const allTags = computed(() =>
   categories.value.flatMap(cat => cat.tags)
 )
@@ -109,6 +147,12 @@ const filteredTags = computed(() =>
     !Object.values(selectedTags.value).includes(tag)
   )
 )
+
+const expandedCategory = ref(null)
+
+function toggleCategory(name) {
+  expandedCategory.value = expandedCategory.value === name ? null : name
+}
 
 const filteredRecipes = computed(() => recipes.value)
 
