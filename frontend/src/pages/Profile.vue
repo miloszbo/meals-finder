@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-base-200 text-white h-[1080px] overflow-hidden flex flex-col">
+  <div class="bg-base-200 text-white min-h-screen overflow-hidden flex flex-col">
     <div class="h-[80px] shrink-0">
       <Navbar />
     </div>
@@ -48,11 +48,92 @@
           <button class="btn btn-success mt-4">Zapisz</button>
         </div>
 
-        <!-- Pozostałe sekcje... -->
-        <div v-else-if="tab === 'privacy'" class="space-y-2">
-          <h2 class="text-xl font-bold">Dane i prywatność</h2>
-          <p class="text-gray-400">Tutaj możesz zarządzać danymi powiązanymi z Twoim kontem.</p>
+        <div v-else-if="tab === 'privacy'" class="max-w-xl space-y-4">
+          <h2 class="text-xl font-bold">Zmiana danych</h2>
+          <p class="text-gray-400">Tutaj możesz zarządzać swoimi danymi kontaktowymi i wiekiem.</p>
+
+          <!-- Sub-tab selector -->
+          <div class="flex border-b border-gray-600 mb-4">
+            <button
+              v-for="opt in ['E-mail','Imię i nazwisko','Telefon','Wiek']"
+              :key="opt"
+              @click="privacySub = opt"
+              class="flex-1 text-center pb-2 transition"
+              :class="privacySub === opt
+                ? 'border-b-2 border-primary text-white'
+                : 'text-gray-400 hover:text-white'"
+            >
+              {{ opt }}
+            </button>
+          </div>
+
+          <!-- Email form -->
+          <div v-if="privacySub === 'E-mail'" class="space-y-4">
+            <label class="form-control">
+              <span class="label-text text-white">Nowy adres e-mail</span>
+              <input
+                type="email"
+                v-model="form.email"
+                class="input input-bordered w-full"
+                placeholder="jan.kowalski@example.com"
+              />
+            </label>
+            <label class="form-control">
+              <span class="label-text text-white">Potwierdź adres e-mail</span>
+              <input
+                type="email"
+                v-model="form.emailConfirm"
+                class="input input-bordered w-full"
+                placeholder="Powtórz nowy e-mail"
+              />
+            </label>
+            <button class="btn btn-success" @click="save('email')" :disabled="form.email !== form.emailConfirm">
+              Zapisz e-mail
+            </button>
+          </div>
+
+          <!-- Name form -->
+          <div v-else-if="privacySub === 'Imię i nazwisko'" class="space-y-4">
+            <label class="form-control">
+              <span class="label-text text-white">Imię i nazwisko</span>
+              <input
+                type="text"
+                v-model="form.fullName"
+                class="input input-bordered w-full"
+                placeholder="Wprowadź imię i nazwisko"
+              />
+            </label>
+            <button class="btn btn-success" @click="save('fullName')">Zapisz imię i nazwisko</button>
+          </div>
+
+          <!-- Phone form -->
+          <div v-else-if="privacySub === 'Telefon'" class="space-y-4">
+            <label class="form-control">
+              <span class="label-text text-white">Numer telefonu</span>
+              <input
+                type="tel"
+                v-model="form.phone"
+                class="input input-bordered w-full"
+                placeholder="+48 123 456 789"
+              />
+            </label>
+            <button class="btn btn-success" @click="save('phone')">Zapisz numer</button>
+          </div>
+          
+          <!-- Birthdate form -->
+          <div v-else-if="privacySub === 'Wiek'" class="space-y-4">
+            <label class="form-control">
+              <span class="label-text text-white">Data urodzenia</span>
+              <input
+                type="date"
+                v-model="form.birthDate"
+                class="input input-bordered w-full"
+              />
+            </label>
+            <button class="btn btn-success" @click="save('birthDate')">Zapisz wiek</button>
+          </div>
         </div>
+
         <div v-else-if="tab === 'security'" class="space-y-2">
           <h2 class="text-xl font-bold">Bezpieczeństwo</h2>
           <p class="text-gray-400">Ustaw hasło, uwierzytelnianie 2FA i inne zabezpieczenia konta.</p>
@@ -88,33 +169,51 @@
             </tbody>
           </table>
         </div>
+<!-- TEST -->
+        <template v-else-if="tab === 'test'">
+          <div class="p-4">
+            <h2 class="text-xl font-bold mb-2">Testowa zakładka</h2>
+            <p class="text-gray-400 mb-4">Oceń przepis poniżej:</p>
+            <RecipeRating v-model="rating" />
+            <p class="mt-2">Twoja ocena: <span class="font-semibold">{{ rating }}</span>/5</p>
+          </div>
+        </template>
       </main>
     </div>
   </div>
 </template>
 
+
+
 <script setup>
 import Navbar from '@/components/Navbar.vue'
+import RecipeRating from '@/components/RecipeRating.vue'
 import { ref } from 'vue'
 import { User, Settings, Lock, Users, CreditCard } from 'lucide-vue-next'
-
-
+import { useRoute } from 'vue-router'
+import { onMounted } from 'vue'
 
 const sidebarItems = [
   { name: 'Strona główna', tab: 'profile', icon: User },
   { name: 'Dane osobowe', tab: 'settings', icon: Settings },
-  { name: 'Dane i prywatność', tab: 'privacy', icon: Settings },
+  { name: 'Zmiana danych', tab: 'privacy', icon: Settings },
   { name: 'Bezpieczeństwo', tab: 'security', icon: Lock },
   { name: 'Osoby i udostępnianie', tab: 'sharing', icon: Users },
-  { name: 'Płatności i subskrypcje', tab: 'payments', icon: CreditCard }
+  { name: 'Płatności i subskrypcje', tab: 'payments', icon: CreditCard },
+  { name: 'Test', tab: 'test', icon: Users }  // <-- testowa zakładka
 ]
 
-
-import { useRoute } from 'vue-router'
-import { onMounted } from 'vue'
-
-const route = useRoute()
 const tab = ref('profile')
+const privacySub = ref('E-mail')
+const form = ref({
+  email: '',
+  emailConfirm: '',
+  fullName: '',
+  phone: '',
+  birthDate: ''
+})
+const rating = ref(0)
+const route = useRoute()
 
 onMounted(() => {
   const tabQuery = route.query.tab
@@ -123,4 +222,7 @@ onMounted(() => {
   }
 })
 
+function save(field) {
+  console.log('Zapisuję', field, '->', form.value[field])
+}
 </script>
