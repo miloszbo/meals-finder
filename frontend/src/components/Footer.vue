@@ -1,6 +1,6 @@
 <template>
   <!--Full-width footer bar. -->
-  <footer class="w-full bg-[#060606] text-[#DEDBD7] text-xs border-t border-[#222]">
+<footer class="mt-auto w-full bg-[#060606] text-[#DEDBD7] text-xs border-t border-[#222]">
     <div class="max-w-screen-xl mx-auto flex items-start justify-between px-8 py-4 w-full">
       
       <!-- Left side: Logo and copyright -->
