@@ -156,15 +156,15 @@ func (q *Queries) LoginUserWithUsername(ctx context.Context, username string) (L
 const updateUserSettings = `-- name: UpdateUserSettings :exec
 UPDATE users
 SET
-email = CASE WHEN $1::text IS NULL  THEN email        ELSE $1::text        END,
-name = CASE WHEN $2::text IS NULL  THEN name         ELSE $2::text         END,
-surname = CASE WHEN $3::text IS NULL  THEN surname      ELSE $3::text      END,
-phone_number = CASE WHEN $4::text IS NULL  THEN phone_number ELSE $4::text END,
-age = CASE WHEN $5::int IS NULL  THEN age          ELSE $5::int          END,
-sex = CASE WHEN $6::text IS NULL  THEN sex          ELSE $6::text          END,
-weight = CASE WHEN $7::int IS NULL  THEN weight       ELSE $7::int       END,
-height = CASE WHEN $8::int IS NULL  THEN height       ELSE $8::int       END,
-bmi = CASE WHEN $9::int IS NULL  THEN bmi          ELSE $9::int          END
+email = CASE WHEN $1::text = ''  THEN email        ELSE $1::text        END,
+name = CASE WHEN $2::text = ''  THEN name         ELSE $2::text         END,
+surname = CASE WHEN $3::text = ''  THEN surname      ELSE $3::text      END,
+phone_number = CASE WHEN $4::text = ''  THEN phone_number ELSE $4::text END,
+age = CASE WHEN $5::int = -1  THEN age          ELSE $5::int          END,
+sex = CASE WHEN $6::text = ''  THEN sex          ELSE $6::text          END,
+weight = CASE WHEN $7::int = -1  THEN weight       ELSE $7::int       END,
+height = CASE WHEN $8::int = -1  THEN height       ELSE $8::int       END,
+bmi = CASE WHEN $9::int = -1  THEN bmi          ELSE $9::int          END
 WHERE username = $10::text
 `
 

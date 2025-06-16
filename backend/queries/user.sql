@@ -31,15 +31,15 @@ DELETE FROM users_tags WHERE username = $1 AND tag_id = $2;
 -- name: UpdateUserSettings :exec
 UPDATE users
 SET
-email = CASE WHEN sqlc.arg('email')::text IS NULL  THEN email        ELSE sqlc.arg('email')::text        END,
-name = CASE WHEN sqlc.arg('name')::text IS NULL  THEN name         ELSE sqlc.arg('name')::text         END,
-surname = CASE WHEN sqlc.arg('surname')::text IS NULL  THEN surname      ELSE sqlc.arg('surname')::text      END,
-phone_number = CASE WHEN sqlc.arg('phone_number')::text IS NULL  THEN phone_number ELSE sqlc.arg('phone_number')::text END,
-age = CASE WHEN sqlc.arg('age')::int IS NULL  THEN age          ELSE sqlc.arg('age')::int          END,
-sex = CASE WHEN sqlc.arg('sex')::text IS NULL  THEN sex          ELSE sqlc.arg('sex')::text          END,
-weight = CASE WHEN sqlc.arg('weight')::int IS NULL  THEN weight       ELSE sqlc.arg('weight')::int       END,
-height = CASE WHEN sqlc.arg('height')::int IS NULL  THEN height       ELSE sqlc.arg('height')::int       END,
-bmi = CASE WHEN sqlc.arg('bmi')::int IS NULL  THEN bmi          ELSE sqlc.arg('bmi')::int          END
+email = CASE WHEN sqlc.arg('email')::text = ''  THEN email        ELSE sqlc.arg('email')::text        END,
+name = CASE WHEN sqlc.arg('name')::text = ''  THEN name         ELSE sqlc.arg('name')::text         END,
+surname = CASE WHEN sqlc.arg('surname')::text = ''  THEN surname      ELSE sqlc.arg('surname')::text      END,
+phone_number = CASE WHEN sqlc.arg('phone_number')::text = ''  THEN phone_number ELSE sqlc.arg('phone_number')::text END,
+age = CASE WHEN sqlc.arg('age')::int = -1  THEN age          ELSE sqlc.arg('age')::int          END,
+sex = CASE WHEN sqlc.arg('sex')::text = ''  THEN sex          ELSE sqlc.arg('sex')::text          END,
+weight = CASE WHEN sqlc.arg('weight')::int = -1  THEN weight       ELSE sqlc.arg('weight')::int       END,
+height = CASE WHEN sqlc.arg('height')::int = -1  THEN height       ELSE sqlc.arg('height')::int       END,
+bmi = CASE WHEN sqlc.arg('bmi')::int = -1  THEN bmi          ELSE sqlc.arg('bmi')::int          END
 WHERE username = sqlc.arg('username')::text;
 
 
