@@ -30,26 +30,19 @@ func (cur *CreateUserRequest) Validate() error {
 	return nil
 }
 
-
 type UpdateUserSettingsRequest struct {
-	Username    string   `json:"username"` // required
-
-	Email       string   `json:"email"`        // "" = no update
-	Name        string   `json:"name"`         // "" = no update
-	Surname     string   `json:"surname"`      // "" = no update
-	PhoneNumber string   `json:"phone_number"` // "" = no update
-	Age         int32    `json:"age"`          // -1 = no update
-	Sex         string   `json:"sex"`          // "" = no update
-	Weight      int32    `json:"weight"`       // -1 = no update
-	Height      int32    `json:"height"`       // -1 = no update
-	Bmi         int32    `json:"bmi"`          // -1 = no update
-
-	TagIDs      []int32  `json:"tag_ids,omitempty"` // optional
+	Email       string `json:"email"`        // "" = no update
+	Name        string `json:"name"`         // "" = no update
+	Surname     string `json:"surname"`      // "" = no update
+	PhoneNumber string `json:"phone_number"` // "" = no update
+	Age         int32  `json:"age"`          // -1 = no update
+	Sex         string `json:"sex"`          // "" = no update
+	Weight      int32  `json:"weight"`       // -1 = no update
+	Height      int32  `json:"height"`       // -1 = no update
+	Bmi         int32  `json:"bmi"`          // -1 = no update
 }
 
-func (r *UpdateUserSettingsRequest) Validate() error {
-	if r.Username == "" {
-		return errors.New("username is required")
-	}
-	return nil
+type UserTag struct {
+	Name    string
+	TagType int32
 }

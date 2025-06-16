@@ -94,7 +94,6 @@ func (uh *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := uh.UserService.GetUser(ctx, claims["sub"].(string))
-
 	if err != nil {
 		log.Println(err.Error())
 		http.Error(w, "user was not found", http.StatusInternalServerError)
@@ -108,7 +107,7 @@ func (uh *UserHandler) GetProfile(w http.ResponseWriter, r *http.Request) {
 
 func (uh *UserHandler) UpdateUserSettings(w http.ResponseWriter, r *http.Request) {
 	var req models.UpdateUserSettingsRequest
-
+	ctx := r.Context()
 	// Decode JSON input
 	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
 		log.Println(err.Error())
@@ -116,14 +115,13 @@ func (uh *UserHandler) UpdateUserSettings(w http.ResponseWriter, r *http.Request
 		return
 	}
 
-	// Validate request
-	if err := req.Validate(); err != nil {
-		http.Error(w, ErrBadRequest.Error(), http.StatusBadRequest)
-		return
+	claims, ok := ctx.Value("claims").(jwt.MapClaims)
+	if !ok {
+		http.Error(w, "token was empty", http.StatusUnauthorized)
 	}
 
 	// Call service
-	if err := uh.UserService.UpdateUserSettings(r.Context(), &req); err != nil {
+	if err := uh.UserService.UpdateUserSettings(ctx, &req, claims["sub"].(string)); err != nil {
 		log.Println(err.Error())
 		http.Error(w, err.Error(), StatusFromError(err))
 		return
@@ -132,4 +130,28 @@ func (uh *UserHandler) UpdateUserSettings(w http.ResponseWriter, r *http.Request
 	// Success
 	w.WriteHeader(http.StatusOK)
 	w.Write([]byte(`{"message":"user settings updated"}`))
+}
+
+func (u *UserHandler) AddUserTag(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	claims, ok := ctx.Value("claims").(jwt.MapClaims)
+	if !ok {
+		http.Error(w, "token was empty", http.StatusUnauthorized)
+	}
+
+	var userTag models.UserTag
+
+	if err := json.NewDecoder(r.Body).Decode(&userTag); err != nil {
+		log.Println(err.Error())
+		http.Error(w, ErrBadRequest.Error(), http.StatusBadRequest)
+		return
+	}
+
+	err := u.UserService.AddUserTag(ctx, claims["sub"].(string), &userTag)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "internal error", http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
 }

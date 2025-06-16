@@ -21,7 +21,6 @@ func SetupRoutes() http.Handler {
 	mux.HandleFunc("POST /user/login", userHandler.LoginUser)
 	mux.HandleFunc("POST /user/register", userHandler.CreateUser)
 	mux.HandleFunc("GET /logout", userHandler.Logout)
-	mux.HandleFunc("POST /user/settings", userHandler.UpdateUserSettings)
 
 	stack := middlewares.CreateStack(
 		middlewares.Logging,
@@ -38,6 +37,8 @@ func SetupRoutes() http.Handler {
 	authMux.HandleFunc("GET /verify", userHandler.IsLogged)
 	authMux.HandleFunc("GET /browser", finderHandler.FindRecipes)
 	authMux.HandleFunc("GET /re/{id}", finderHandler.GetRecipe)
+	authMux.HandleFunc("PATCH /user/settings", userHandler.UpdateUserSettings)
+	authMux.HandleFunc("POST /user/tags", userHandler.AddUserTag)
 
 	mux.Handle("/", middlewares.Authentication(authMux))
 
