@@ -20,8 +20,10 @@ SELECT username, created_at, email, name, surname, phone_number, age, sex, weigh
 SELECT tag_id FROM users_tags WHERE username = $1;
 
 -- name: InsertUserTag :exec
-INSERT INTO users_tags (username, tag_id) VALUES ($1, $2)
-ON CONFLICT DO NOTHING;
+INSERT INTO users_tags (username, tag_id)
+SELECT @username::text AS username, t.id AS tag_id FROM tags t
+JOIN tags_types tt ON t.type_id = tt.id
+WHERE t.name = @tag_name::text AND t.name @tag_type_name::text;
 
 -- name: DeleteUserTag :exec
 DELETE FROM users_tags WHERE username = $1 AND tag_id = $2;
@@ -29,15 +31,15 @@ DELETE FROM users_tags WHERE username = $1 AND tag_id = $2;
 -- name: UpdateUserSettings :exec
 UPDATE users
 SET
-    email        = CASE WHEN sqlc.arg('email')        = ''  THEN email        ELSE sqlc.arg('email')        END,
-    name         = CASE WHEN sqlc.arg('name')         = ''  THEN name         ELSE sqlc.arg('name')         END,
-    surname      = CASE WHEN sqlc.arg('surname')      = ''  THEN surname      ELSE sqlc.arg('surname')      END,
-    phone_number = CASE WHEN sqlc.arg('phone_number') = ''  THEN phone_number ELSE sqlc.arg('phone_number') END,
-    age          = CASE WHEN sqlc.arg('age')          = -1  THEN age          ELSE sqlc.arg('age')          END,
-    sex          = CASE WHEN sqlc.arg('sex')          = ''  THEN sex          ELSE sqlc.arg('sex')          END,
-    weight       = CASE WHEN sqlc.arg('weight')       = -1  THEN weight       ELSE sqlc.arg('weight')       END,
-    height       = CASE WHEN sqlc.arg('height')       = -1  THEN height       ELSE sqlc.arg('height')       END,
-    bmi          = CASE WHEN sqlc.arg('bmi')          = -1  THEN bmi          ELSE sqlc.arg('bmi')          END
-WHERE username = sqlc.arg('username');
+email = CASE WHEN sqlc.arg('email')::text IS NULL  THEN email        ELSE sqlc.arg('email')::text        END,
+name = CASE WHEN sqlc.arg('name')::text IS NULL  THEN name         ELSE sqlc.arg('name')::text         END,
+surname = CASE WHEN sqlc.arg('surname')::text IS NULL  THEN surname      ELSE sqlc.arg('surname')::text      END,
+phone_number = CASE WHEN sqlc.arg('phone_number')::text IS NULL  THEN phone_number ELSE sqlc.arg('phone_number')::text END,
+age = CASE WHEN sqlc.arg('age')::int IS NULL  THEN age          ELSE sqlc.arg('age')::int          END,
+sex = CASE WHEN sqlc.arg('sex')::text IS NULL  THEN sex          ELSE sqlc.arg('sex')::text          END,
+weight = CASE WHEN sqlc.arg('weight')::int IS NULL  THEN weight       ELSE sqlc.arg('weight')::int       END,
+height = CASE WHEN sqlc.arg('height')::int IS NULL  THEN height       ELSE sqlc.arg('height')::int       END,
+bmi = CASE WHEN sqlc.arg('bmi')::int IS NULL  THEN bmi          ELSE sqlc.arg('bmi')::int          END
+WHERE username = sqlc.arg('username')::text;
 
 
