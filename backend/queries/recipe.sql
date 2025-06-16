@@ -72,3 +72,6 @@ ORDER BY r.id LIMIT @recipes_limit::int OFFSET @recipes_offset::int;
 
 -- name: GetRecipeWithId :one
 SELECT * FROM recipes WHERE id = $1;
+
+-- name: GetAllTags :many
+SELECT * FROM tags;
