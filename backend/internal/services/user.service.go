@@ -121,6 +121,17 @@ func (s *BaseUserService) UpdateUserSettings(ctx context.Context, req *models.Up
 }
 
 func (s *BaseUserService) AddUserTag(ctx context.Context, username string, userTag *models.UserTag) error {
+	err := s.Repo.InsertUserTag(ctx, repository.InsertUserTagParams{
+		Username:    username,
+		TagName:     userTag.Name,
+		TagTypeName: userTag.TagType,
+	})
+
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
 	return nil
 }
 
