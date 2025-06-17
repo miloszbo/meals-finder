@@ -77,6 +77,7 @@ CREATE TABLE IF NOT EXISTS recipes_tags (
 CREATE TABLE IF NOT EXISTS users_tags (
     username VARCHAR(40) NOT NULL,
     tag_id INTEGER NOT NULL
+    FOREIGN KEY (tag_id) REFERENCES tags(id)
 );
 
 -- Indexes
