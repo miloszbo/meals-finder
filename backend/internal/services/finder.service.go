@@ -29,7 +29,7 @@ func NewBaseFinderService(conn *pgx.Conn) BaseFinderService {
 }
 
 func (b *BaseFinderService) CreateRecipe(ctx context.Context, recipe *models.RecipeAdd) error {
-	err := b.Repo.CreateRecipe(ctx, repository.CreateRecipeParams{
+	id, err := b.Repo.CreateRecipe(ctx, repository.CreateRecipeParams{
 		Name:        recipe.Name,
 		Recipe:      recipe.Recipe,
 		Ingredients: recipe.Ingredients,
@@ -37,7 +37,32 @@ func (b *BaseFinderService) CreateRecipe(ctx context.Context, recipe *models.Rec
 		Difficulty:  recipe.Difficulty,
 	})
 
-	return err
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	for _, tag := range recipe.Tags {
+		tagId, err := b.Repo.GetTagId(ctx, repository.GetTagIdParams{
+			Key:   tag.TagType,
+			Value: tag.Name,
+		})
+		if err != nil {
+			log.Println(err.Error())
+			return err
+		}
+		err = b.Repo.AddTagsForRecipe(ctx, repository.AddTagsForRecipeParams{
+			TagID:    tagId,
+			RecipeID: id,
+		})
+
+		if err != nil {
+			log.Println(err.Error())
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (b *BaseFinderService) GetTags(ctx context.Context) ([]repository.GetAllTagsRow, error) {
