@@ -12,6 +12,7 @@ import (
 type FinderService interface {
 	FindRecipe(ctx context.Context, recipeParams models.RecipesFinderParams) ([]repository.FilterRecipesByTagNamesAndParamsRow, error)
 	GetRecipe(ctx context.Context, id int32) (repository.Recipe, error)
+	GetTags(ctx context.Context) ([]repository.GetAllTagsRow, error)
 }
 
 type BaseFinderService struct {
@@ -24,6 +25,11 @@ func NewBaseFinderService(conn *pgx.Conn) BaseFinderService {
 		DbConn: conn,
 		Repo:   repository.New(conn),
 	}
+}
+
+func (b *BaseFinderService) GetTags(ctx context.Context) ([]repository.GetAllTagsRow, error) {
+	tags, err := b.Repo.GetAllTags(ctx)
+	return tags, err
 }
 
 func (b *BaseFinderService) GetRecipe(ctx context.Context, id int32) (repository.Recipe, error) {

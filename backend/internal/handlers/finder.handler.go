@@ -15,6 +15,43 @@ type FinderHandler struct {
 	FinderService services.FinderService
 }
 
+func (f *FinderHandler) GetTags(w http.ResponseWriter, r *http.Request) {
+	var tagsGroups []models.TagGroup
+	var currentGroup *models.TagGroup
+	var currentType string
+	tags, err := f.FinderService.GetTags(r.Context())
+	if err != nil {
+		http.Error(w, "internal error", http.StatusInternalServerError)
+	}
+
+	for _, tag := range tags {
+		typeName := tag.TypeName
+		tagName := tag.TagName
+
+		if currentGroup == nil || currentType != typeName {
+			currentType = typeName
+			currentGroup = &models.TagGroup{
+				Name: typeName,
+				Tags: []string{},
+			}
+			tagsGroups = append(tagsGroups, *currentGroup)
+		}
+
+		// Dodaj tag do bieżącej grupy
+		tagsGroups[len(tagsGroups)-1].Tags = append(tagsGroups[len(tagsGroups)-1].Tags, tagName)
+	}
+
+	tagsJson, err := json.Marshal(tagsGroups)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "internal error", http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(tagsJson)
+}
+
 func (f *FinderHandler) GetRecipe(w http.ResponseWriter, r *http.Request) {
 	ctx := context.Background()
 	id64, err := strconv.ParseInt(r.PathValue("id"), 10, 32)
