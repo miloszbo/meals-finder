@@ -11,6 +11,21 @@ import (
 	"github.com/miloszbo/meals-finder/internal/models"
 )
 
+const addTagsForRecipe = `-- name: AddTagsForRecipe :exec
+INSERT INTO recipes_tags (recipe_id, tag_id) VALUES
+($1::int, $2::int)
+`
+
+type AddTagsForRecipeParams struct {
+	RecipeID int32 `json:"recipe_id"`
+	TagID    int32 `json:"tag_id"`
+}
+
+func (q *Queries) AddTagsForRecipe(ctx context.Context, arg AddTagsForRecipeParams) error {
+	_, err := q.db.Exec(ctx, addTagsForRecipe, arg.RecipeID, arg.TagID)
+	return err
+}
+
 const createRecipe = `-- name: CreateRecipe :one
 INSERT INTO recipes (name,recipe,ingredients,time,difficulty) VALUES 
 (
@@ -179,7 +194,7 @@ func (q *Queries) FilterRecipesByTagNamesAndParams(ctx context.Context, arg Filt
 const getAllTags = `-- name: GetAllTags :many
 SELECT tt.name AS type_name, t.name AS tag_name
 FROM tags t
-JOIN tags_types tt ON t.tag_type_id = tt.id
+JOIN tags_types tt ON t.type_id = tt.id
 ORDER BY tt.id, t.name
 `
 
@@ -224,4 +239,23 @@ func (q *Queries) GetRecipeWithId(ctx context.Context, id int32) (Recipe, error)
 		&i.Difficulty,
 	)
 	return i, err
+}
+
+const getTagId = `-- name: GetTagId :one
+SELECT t.id AS tag_id
+FROM tags t
+JOIN tags_types tt ON t.type_id = tt.id
+WHERE tags_types.name = $1::text AND tags.name = $2::text
+`
+
+type GetTagIdParams struct {
+	Key   string `json:"key"`
+	Value string `json:"value"`
+}
+
+func (q *Queries) GetTagId(ctx context.Context, arg GetTagIdParams) (int32, error) {
+	row := q.db.QueryRow(ctx, getTagId, arg.Key, arg.Value)
+	var tag_id int32
+	err := row.Scan(&tag_id)
+	return tag_id, err
 }
