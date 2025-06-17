@@ -143,19 +143,27 @@ func (q *Queries) FilterRecipesByTagNamesAndParams(ctx context.Context, arg Filt
 }
 
 const getAllTags = `-- name: GetAllTags :many
-SELECT id, name, type_id FROM tags
+SELECT tt.name AS type_name, t.name AS tag_name
+FROM tags t
+JOIN tags_types tt ON t.tag_type_id = tt.id
+ORDER BY tt.id, t.name
 `
 
-func (q *Queries) GetAllTags(ctx context.Context) ([]Tag, error) {
+type GetAllTagsRow struct {
+	TypeName string `json:"type_name"`
+	TagName  string `json:"tag_name"`
+}
+
+func (q *Queries) GetAllTags(ctx context.Context) ([]GetAllTagsRow, error) {
 	rows, err := q.db.Query(ctx, getAllTags)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Tag
+	var items []GetAllTagsRow
 	for rows.Next() {
-		var i Tag
-		if err := rows.Scan(&i.ID, &i.Name, &i.TypeID); err != nil {
+		var i GetAllTagsRow
+		if err := rows.Scan(&i.TypeName, &i.TagName); err != nil {
 			return nil, err
 		}
 		items = append(items, i)
