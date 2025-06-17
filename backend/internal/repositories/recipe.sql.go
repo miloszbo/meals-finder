@@ -7,7 +7,39 @@ package repository
 
 import (
 	"context"
+
+	"github.com/miloszbo/meals-finder/internal/models"
 )
+
+const createRecipe = `-- name: CreateRecipe :exec
+INSERT INTO recipes (name,recipe,ingredients,time,difficulty) VALUES 
+(
+  $1::text,
+  $2::text,
+  $3,
+  $4::int,
+  $5::int
+)
+`
+
+type CreateRecipeParams struct {
+	Name        string                 `json:"name"`
+	Recipe      string                 `json:"recipe"`
+	Ingredients models.IngredientsJson `json:"ingredients"`
+	Time        int32                  `json:"time"`
+	Difficulty  int32                  `json:"difficulty"`
+}
+
+func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) error {
+	_, err := q.db.Exec(ctx, createRecipe,
+		arg.Name,
+		arg.Recipe,
+		arg.Ingredients,
+		arg.Time,
+		arg.Difficulty,
+	)
+	return err
+}
 
 const filterRecipesByTagNamesAndParams = `-- name: FilterRecipesByTagNamesAndParams :many
 SELECT r.id, r.name, r.time, r.difficulty
