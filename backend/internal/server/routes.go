@@ -18,19 +18,20 @@ func SetupRoutes() http.Handler {
 		UserService: &userService,
 	}
 
+	finderService := services.NewBaseFinderService(conn)
+	finderHandler := handlers.FinderHandler{
+		FinderService: &finderService,
+	}
+
 	mux.HandleFunc("POST /user/login", userHandler.LoginUser)
 	mux.HandleFunc("POST /user/register", userHandler.CreateUser)
 	mux.HandleFunc("GET /logout", userHandler.Logout)
+	mux.HandleFunc("GET /tags", finderHandler.GetTags)
 
 	stack := middlewares.CreateStack(
 		middlewares.Logging,
 		middlewares.CorsMiddleware,
 	)
-
-	finderService := services.NewBaseFinderService(conn)
-	finderHandler := handlers.FinderHandler{
-		FinderService: &finderService,
-	}
 
 	authMux := http.NewServeMux()
 	authMux.HandleFunc("GET /profile", userHandler.GetProfile)
