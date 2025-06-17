@@ -11,7 +11,7 @@ import (
 	"github.com/miloszbo/meals-finder/internal/models"
 )
 
-const createRecipe = `-- name: CreateRecipe :exec
+const createRecipe = `-- name: CreateRecipe :one
 INSERT INTO recipes (name,recipe,ingredients,time,difficulty) VALUES 
 (
   $1::text,
@@ -19,7 +19,7 @@ INSERT INTO recipes (name,recipe,ingredients,time,difficulty) VALUES
   $3,
   $4::int,
   $5::int
-)
+) RETURNING id
 `
 
 type CreateRecipeParams struct {
@@ -30,15 +30,17 @@ type CreateRecipeParams struct {
 	Difficulty  int32                  `json:"difficulty"`
 }
 
-func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) error {
-	_, err := q.db.Exec(ctx, createRecipe,
+func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (int32, error) {
+	row := q.db.QueryRow(ctx, createRecipe,
 		arg.Name,
 		arg.Recipe,
 		arg.Ingredients,
 		arg.Time,
 		arg.Difficulty,
 	)
-	return err
+	var id int32
+	err := row.Scan(&id)
+	return id, err
 }
 
 const filterRecipesByTagNamesAndParams = `-- name: FilterRecipesByTagNamesAndParams :many

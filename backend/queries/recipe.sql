@@ -79,7 +79,7 @@ FROM tags t
 JOIN tags_types tt ON t.tag_type_id = tt.id
 ORDER BY tt.id, t.name;
 
--- name: CreateRecipe :exec
+-- name: CreateRecipe :one
 INSERT INTO recipes (name,recipe,ingredients,time,difficulty) VALUES 
 (
   @name::text,
@@ -87,4 +87,4 @@ INSERT INTO recipes (name,recipe,ingredients,time,difficulty) VALUES
   @ingredients,
   @time::int,
   @difficulty::int
-);
+) RETURNING id;
