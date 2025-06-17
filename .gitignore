@@ -12,3 +12,8 @@ tmp/
 
 # .env files
 .env
+
+# Ignore GCS key and tools
+/tools/project-storege-key.json
+/tools/node_modules
+

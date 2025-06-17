@@ -8,6 +8,7 @@ import Browser from '@/pages/Browser-test.vue'
 import Recipe from '@/pages/Recipe.vue'
 import Start from '@/pages/Start.vue'
 import RecipeMg from '@/pages/RecipeMg.vue'
+import TestPage from '@/pages/TestPage.vue'
 
 const routes = [
   //{ path: '/', name: 'Root', component: HomePage },
@@ -19,7 +20,9 @@ const routes = [
   { path: '/register', name: 'Register', component: RegisterPage },
   { path: '/profile', name: 'Profile', component: Profile, meta: { requiresAuth: true } }, // 🔒
   { path: '/browser', name: 'Browser', component: Browser, meta: { requiresAuth: true } }, // 🔒
-  { path: '/re/:id', name: 'Recipe', component: Recipe, meta: { requiresAuth: true } } // 🔹 zmieniona nazwa
+  { path: '/re/:id', name: 'Recipe', component: Recipe, meta: { requiresAuth: true } }, // 🔹 zmieniona nazwa
+  { path: '/register', name: 'Register', component: RegisterPage },
+  { path: '/test', component: TestPage },
 ]
 
 const router = createRouter({
