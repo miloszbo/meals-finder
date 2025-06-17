@@ -24,3 +24,8 @@ type Ingredient struct {
 type IngredientsJson struct {
 	Ingredients []Ingredient `json:"ingredients"`
 }
+
+type TagGroup struct {
+	Name string   `json:"name"`
+	Tags []string `json:"tags"`
+}

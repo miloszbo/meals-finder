@@ -72,3 +72,9 @@ ORDER BY r.id LIMIT @recipes_limit::int OFFSET @recipes_offset::int;
 
 -- name: GetRecipeWithId :one
 SELECT * FROM recipes WHERE id = $1;
+
+-- name: GetAllTags :many
+SELECT tt.name AS type_name, t.name AS tag_name
+FROM tags t
+JOIN tags_types tt ON t.tag_type_id = tt.id
+ORDER BY tt.id, t.name;
