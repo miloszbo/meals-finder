@@ -29,3 +29,17 @@ type TagGroup struct {
 	Name string   `json:"name"`
 	Tags []string `json:"tags"`
 }
+
+type RecipeTags struct {
+	Name    string `json:"name"`
+	TagType string `json:"type"`
+}
+
+type RecipeAdd struct {
+	Name        string          `json:"name"`
+	Recipe      string          `json:"recipe"`
+	Ingredients IngredientsJson `json:"ingredients"`
+	Time        int32           `json:"time"`
+	Difficulty  int32           `json:"difficulty"`
+	Tags        []RecipeTags    `json:"tags"`
+}

@@ -13,6 +13,7 @@ type FinderService interface {
 	FindRecipe(ctx context.Context, recipeParams models.RecipesFinderParams) ([]repository.FilterRecipesByTagNamesAndParamsRow, error)
 	GetRecipe(ctx context.Context, id int32) (repository.Recipe, error)
 	GetTags(ctx context.Context) ([]repository.GetAllTagsRow, error)
+	CreateRecipe(ctx context.Context, recipe *models.RecipeAdd) error
 }
 
 type BaseFinderService struct {
@@ -25,6 +26,43 @@ func NewBaseFinderService(conn *pgx.Conn) BaseFinderService {
 		DbConn: conn,
 		Repo:   repository.New(conn),
 	}
+}
+
+func (b *BaseFinderService) CreateRecipe(ctx context.Context, recipe *models.RecipeAdd) error {
+	id, err := b.Repo.CreateRecipe(ctx, repository.CreateRecipeParams{
+		Name:        recipe.Name,
+		Recipe:      recipe.Recipe,
+		Ingredients: recipe.Ingredients,
+		Time:        recipe.Time,
+		Difficulty:  recipe.Difficulty,
+	})
+
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	for _, tag := range recipe.Tags {
+		tagId, err := b.Repo.GetTagId(ctx, repository.GetTagIdParams{
+			Key:   tag.TagType,
+			Value: tag.Name,
+		})
+		if err != nil {
+			log.Println(err.Error())
+			return err
+		}
+		err = b.Repo.AddTagsForRecipe(ctx, repository.AddTagsForRecipeParams{
+			TagID:    tagId,
+			RecipeID: id,
+		})
+
+		if err != nil {
+			log.Println(err.Error())
+			return err
+		}
+	}
+
+	return nil
 }
 
 func (b *BaseFinderService) GetTags(ctx context.Context) ([]repository.GetAllTagsRow, error) {

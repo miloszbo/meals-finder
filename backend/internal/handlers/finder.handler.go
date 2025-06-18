@@ -15,6 +15,25 @@ type FinderHandler struct {
 	FinderService services.FinderService
 }
 
+func (f *FinderHandler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
+	var recipe models.RecipeAdd
+
+	if err := json.NewDecoder(r.Body).Decode(&recipe); err != nil {
+		log.Println(err.Error())
+		http.Error(w, ErrBadRequest.Error(), http.StatusBadRequest)
+		return
+	}
+
+	if err := f.FinderService.CreateRecipe(r.Context(), &recipe); err != nil {
+		log.Println(err.Error())
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(`{"message":"user created"}`))
+}
+
 func (f *FinderHandler) GetTags(w http.ResponseWriter, r *http.Request) {
 	var tagsGroups []models.TagGroup
 	var currentGroup *models.TagGroup

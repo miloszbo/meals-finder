@@ -43,6 +43,6 @@ type UpdateUserSettingsRequest struct {
 }
 
 type UserTag struct {
-	Name    string
-	TagType int32
+	Name    string `json:"name"`
+	TagType string `json:"type"`
 }
