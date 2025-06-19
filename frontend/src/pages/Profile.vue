@@ -170,14 +170,73 @@
           </table>
         </div>
 <!-- TEST -->
-        <template v-else-if="tab === 'test'">
+        <div v-else-if="tab === 'test'">
           <div class="p-4">
             <h2 class="text-xl font-bold mb-2">Testowa zakładka</h2>
             <p class="text-gray-400 mb-4">Oceń przepis poniżej:</p>
             <RecipeRating v-model="rating" />
             <p class="mt-2">Twoja ocena: <span class="font-semibold">{{ rating }}</span>/5</p>
           </div>
-        </template>
+          <h2 class="text-xl font-bold mb-4">Search by tags</h2>
+
+      <div class="relative" ref="dropdownWrapper">
+        <input
+          type="text"
+          v-model="filterQuery"
+          placeholder="Type to search..."
+          class="input input-sm input-bordered w-full mb-2"
+          @focus="dropdownVisible = true"
+        />
+<div
+  v-if="dropdownVisible"
+  class="absolute z-10 bg-base-100 border border-base-content mt-1 w-full rounded-box shadow max-h-96 overflow-y-auto"
+>
+  <div
+    v-for="category in filteredCategories"
+    :key="category.name"
+    class="border-b px-4 py-2"
+  >
+    <div
+      @click="toggleCategory(category.name)"
+      class="cursor-pointer font-semibold hover:text-primary flex justify-between items-center"
+    >
+      {{ category.name }}
+      <span class="text-xs">{{ expandedCategory === category.name ? '▲' : '▼' }}</span>
+    </div>
+
+    <!-- rozwijane tagi -->
+    <div
+      v-if="expandedCategory === category.name"
+      class="mt-2 max-h-40 overflow-y-auto pl-2 space-y-1"
+    >
+      <div
+        v-for="tag in limitedTags(category.tags)"
+        :key="tag"
+        @click.stop="addTag(tag)"
+        class="px-3 py-1 hover:bg-base-300 rounded cursor-pointer text-sm"
+      >
+        {{ tag }}
+      </div>
+    </div>
+  </div>
+</div>
+    </div>
+
+      <div class="mt-4" v-if="Object.keys(selectedTags).length">
+        <h3 class="text-md font-semibold mb-2">Selected Tags:</h3>
+        <div class="flex flex-wrap gap-2">
+          <span
+            v-for="(value, category) in selectedTags"
+            :key="category"
+            @click="removeTag(value)"
+            class="bg-primary text-white rounded-full px-4 py-1 text-sm font-semibold cursor-pointer hover:bg-red-500"
+          >
+            {{ value }}
+          </span>
+        </div>
+      </div>
+
+        </div>
       </main>
     </div>
   </div>
@@ -188,10 +247,10 @@
 <script setup>
 import Navbar from '@/components/Navbar.vue'
 import RecipeRating from '@/components/RecipeRating.vue'
-import { ref } from 'vue'
+import { reactive, ref, computed, onMounted, watch } from 'vue'
 import { User, Settings, Lock, Users, CreditCard } from 'lucide-vue-next'
 import { useRoute } from 'vue-router'
-import { onMounted } from 'vue'
+import { getTags, addUserTags, deleteUserTags, displayUserTags } from '@/api/axios'
 
 const sidebarItems = [
   { name: 'Strona główna', tab: 'profile', icon: User },
@@ -203,6 +262,7 @@ const sidebarItems = [
   { name: 'Test', tab: 'test', icon: Users }  // <-- testowa zakładka
 ]
 
+const selectedTags = ref({})
 const tab = ref('profile')
 const privacySub = ref('E-mail')
 const form = ref({
@@ -214,8 +274,116 @@ const form = ref({
 })
 const rating = ref(0)
 const route = useRoute()
+const categories = ref([])
+const recipes = reactive([])
+const filterQuery = ref('')
+const dropdownVisible = ref(false)
+const dropdownWrapper = ref(null)
 
-onMounted(() => {
+const expandedCategory = ref(null)
+
+function toggleCategory(name) {
+  expandedCategory.value = expandedCategory.value === name ? null : name
+}
+
+const tagToCategory = computed(() => {
+  const map = {}
+  categories.value.forEach(cat => {
+    cat.tags.forEach(tag => {
+      map[tag] = cat.name.replace(/\s/g, '_')
+    })
+  })
+  console.log("FileteredtagToCat")
+  console.log(categories.value)
+  return map
+})
+
+function capitalize(str) {
+  return str.charAt(0).toUpperCase() + str.slice(1)
+}
+
+const allTags = computed(() =>
+  categories.value.flatMap(cat => cat.tags)
+)
+
+const filteredTags = computed(() =>
+  allTags.value.filter(tag =>
+    tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
+    !Object.values(selectedTags.value).includes(tag)
+  )
+)
+
+const filteredCategories = computed(() =>
+  categories.value.filter(cat =>
+    cat.tags.some(tag =>
+      tag.startsWith(filterQuery.value) &&
+      !Object.values(selectedTags.value).includes(tag)
+    )
+  )
+)
+
+function handleClickOutside(event) {
+  setTimeout(() => {
+    if (dropdownWrapper.value && !dropdownWrapper.value.contains(event.target)) {
+      dropdownVisible.value = false
+    }
+  }, 0)
+}
+
+function limitedTags(tags) {
+  return tags
+    .filter(tag =>
+      tag.startsWith(filterQuery.value) &&
+      !Object.values(selectedTags.value).includes(tag)
+    )
+    .slice(0, 10)
+}
+
+async function addTag(tag) {
+  const category = tagToCategory.value[tag]
+  if (!category) return
+
+  selectedTags.value = {
+    ...selectedTags.value,
+    [category]: tag
+  }
+
+  console.log(selectedTags)
+  console.log("\n")
+  console.log(selectedTags.value)
+
+  const payload = {
+    name: tag,
+    type: capitalize(category)
+  }
+  
+  filterQuery.value = ''
+  dropdownVisible.value = false
+  const res = await addUserTags(payload)
+}
+
+async function removeTag(tag) {
+  const entry = Object.entries(selectedTags.value).find(([_, v]) => v === tag)
+  if (entry) {
+    const [category] = entry
+    delete selectedTags.value[category]
+    selectedTags.value = { ...selectedTags.value }
+    const res = await deleteUserTags(tag.value)
+  }
+}
+
+onMounted(async () => {
+  try {
+    const tagsRes = await getTags()
+    categories.value = tagsRes.data
+
+    const res = await displayUserTags()
+    selectedTags.value = { ...res.data }
+  } catch (err) {
+    console.error('Błąd ładowania danych:', err)
+  }
+
+  document.addEventListener('click', handleClickOutside)
   const tabQuery = route.query.tab
   if (tabQuery && typeof tabQuery === 'string') {
     tab.value = tabQuery

@@ -30,4 +30,13 @@ export const addRecipe = (formData) =>
     }
   })
 
+export const addUserTags = (data) =>
+  api.post('/user/tags', data)
+
+export const deleteUserTags = (tagName) =>
+  api.delete(`/user/tags/${tagName}`)
+
+export const displayUserTags = () =>
+  api.get('/user/tags')
+
 export default api
