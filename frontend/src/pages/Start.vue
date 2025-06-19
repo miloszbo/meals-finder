@@ -24,6 +24,10 @@
         recipemg
       </router-link>
 
+      <router-link to="/test">
+        TestPage
+      </router-link>
+
 </div>
 </template>
 
