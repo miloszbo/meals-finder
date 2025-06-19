@@ -20,6 +20,9 @@ export const verifyUser = () =>
 export const logoutUser = () =>
   api.get('/logout')
 
+export const getTags = () =>
+  api.get('/tags')
+
 export const addRecipe = (formData) =>
   api.post('/recipes', formData, {
     headers: {
