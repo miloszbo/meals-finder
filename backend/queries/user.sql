@@ -41,5 +41,3 @@ weight = CASE WHEN sqlc.arg('weight')::int = -1  THEN weight       ELSE sqlc.arg
 height = CASE WHEN sqlc.arg('height')::int = -1  THEN height       ELSE sqlc.arg('height')::int       END,
 bmi = CASE WHEN sqlc.arg('bmi')::int = -1  THEN bmi          ELSE sqlc.arg('bmi')::int          END
 WHERE username = sqlc.arg('username')::text;
-
-
