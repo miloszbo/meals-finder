@@ -206,8 +206,15 @@ function handleClickOutside(event) {
 
 onMounted(async () => {
   try {
-    const tagsRes = await getTags()
-    categories.value = tagsRes.data
+
+    // Tags backend
+    
+    // const tagsRes = await getTags()
+    // categories.value = tagsRes.data
+
+    // Test tags json
+    const localTags = await fetch('/tags.json')
+    categories.value = await localTags.json()
 
     selectedTags.value = { ...route.query }
     await fetchRecipes()
