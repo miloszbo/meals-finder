@@ -53,7 +53,7 @@
                 <div
                   v-for="tag in limitedTags(category.tags)"
                   :key="tag"
-                  @click.stop="addTag(tag)"
+                  @click.stop="addTag(tag, category.name)"
                   class="px-3 py-1 hover:bg-base-300 rounded cursor-pointer text-sm"
                 >
                   {{ tag }}
@@ -63,26 +63,27 @@
           </div>
         </div>
         <!-- Wyświetlanie wybranych tagów -->
-        <div class="mt-2 flex flex-wrap gap-2" v-if="selectedTags.length">
+        <div class="mt-2 flex flex-wrap gap-2 w-full">
           <span
-            v-for="tag in selectedTags"
-            :key="tag"
-            @click="removeTag(tag)"
-            class="bg-primary text-white rounded-full px-4 py-1 text-sm font-semibold cursor-pointer hover:bg-red-500"
+            v-for="(tags, category) in selectedTags"
+            :key="category"
           >
-            {{ tag }}
+            <span
+              v-for="tag in tags"
+              :key="tag"
+              @click="removeTag(category, tag)"
+              class="bg-primary text-white rounded-full px-4 py-1 text-sm font-semibold cursor-pointer hover:bg-red-500 mr-1"
+            >
+              {{ tag }}
+            </span>
           </span>
         </div>
       </div>
 
-      <!-- Składniki: dropdown z wyszukiwaniem -->
-     <!-- Ingredients: single-line with dropdown, unit, amount, and remove icon -->
-<div class="form-control mb-6">
-  <label class="label"><span class="label-text">Ingredients</span></label>
-
-        <!-- Dodawanie składników -->
+      <!-- Składniki -->
+      <div class="form-control mb-6">
+        <label class="label"><span class="label-text">Ingredients</span></label>
         <div class="flex flex-wrap md:flex-nowrap gap-2 items-start relative" ref="ingredientDropdownWrapper">
-          <!-- Pole wyszukiwania składnika -->
           <div class="w-full relative">
             <input
               type="text"
@@ -106,7 +107,6 @@
             </div>
           </div>
 
-          <!-- Jednostka -->
           <select v-model="ingredientInput.unit" class="select select-sm select-bordered">
             <option disabled value="">Unit</option>
             <option value="szt.">szt.</option>
@@ -116,7 +116,6 @@
             <option value="l">l</option>
           </select>
 
-          <!-- Ilość -->
           <input
             v-model="ingredientInput.amount"
             type="number"
@@ -124,11 +123,9 @@
             class="input input-sm input-bordered w-24"
           />
 
-          <!-- Przycisk dodawania -->
           <button @click="addIngredient" class="btn btn-sm btn-accent" type="button">Add</button>
         </div>
 
-        <!-- Lista dodanych składników -->
         <ul class="mt-4 space-y-2">
           <li
             v-for="(ingredient, index) in ingredients"
@@ -140,7 +137,7 @@
           </li>
         </ul>
       </div>
-      
+
       <!-- Czas i trudność -->
       <div class="flex gap-4 mb-4">
         <div class="form-control w-1/2">
@@ -166,7 +163,6 @@
         ></textarea>
       </div>
 
-      <!-- Przycisk wysyłania -->
       <button @click="submitRecipe" class="btn btn-primary w-full">Submit</button>
     </div>
   </div>
@@ -186,15 +182,13 @@ const form = ref({
   image: null,
 })
 
-// Tagi
 const categories = ref([])
-const selectedTags = ref([])
+const selectedTags = ref({})
 const filterQuery = ref('')
 const dropdownVisible = ref(false)
 const dropdownWrapper = ref(null)
 const expandedCategory = ref(null)
 
-// Składniki
 const availableIngredients = ref([])
 const ingredients = ref([])
 const ingredientInput = ref({ name: '', unit: '', amount: '' })
@@ -202,17 +196,34 @@ const ingredientDropdownWrapper = ref(null)
 const ingredientDropdownVisible = ref(false)
 const ingredientFilterQuery = ref('')
 
-// Filtrowanie tagów
+const tagToCategory = computed(() => {
+  const map = {}
+  categories.value.forEach(cat => {
+    cat.tags.forEach(tag => {
+      map[tag] = cat.name
+    })
+  })
+  return map
+})
+
 const filteredCategories = computed(() =>
   categories.value.filter(cat =>
     cat.tags.some(tag =>
       tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
-      !selectedTags.value.includes(tag)
+      !(selectedTags.value[cat.name] || []).includes(tag)
     )
   )
 )
 
-// Filtrowanie składników
+function limitedTags(tags) {
+  return tags
+    .filter(tag =>
+      tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
+      !Object.values(selectedTags.value).flat().includes(tag)
+    )
+    .slice(0, 10)
+}
+
 const filteredIngredients = computed(() =>
   availableIngredients.value
     .filter(item =>
@@ -222,27 +233,34 @@ const filteredIngredients = computed(() =>
     .slice(0, 10)
 )
 
-// Wybór tagu
 function toggleCategory(name) {
   expandedCategory.value = expandedCategory.value === name ? null : name
 }
-function addTag(tag) {
-  if (!selectedTags.value.includes(tag)) {
-    selectedTags.value.push(tag)
+
+function addTag(tag, category) {
+  if (!selectedTags.value[category]) {
+    selectedTags.value[category] = []
+  }
+  if (!selectedTags.value[category].includes(tag)) {
+    selectedTags.value[category].push(tag)
     dropdownVisible.value = false
     filterQuery.value = ''
   }
 }
-function removeTag(tag) {
-  selectedTags.value = selectedTags.value.filter(t => t !== tag)
+
+function removeTag(category, tag) {
+  selectedTags.value[category] = selectedTags.value[category].filter(t => t !== tag)
+  if (selectedTags.value[category].length === 0) {
+    delete selectedTags.value[category]
+  }
 }
 
-// Wybór składnika
 function selectIngredient(item) {
   ingredientInput.value.name = item
   ingredientFilterQuery.value = item
   ingredientDropdownVisible.value = false
 }
+
 function addIngredient() {
   const { name, unit, amount } = ingredientInput.value
   if (!name || !unit || !amount) {
@@ -252,11 +270,11 @@ function addIngredient() {
   ingredients.value.push({ ...ingredientInput.value })
   ingredientInput.value = { name: '', unit: '', amount: '' }
 }
+
 function removeIngredient(index) {
   ingredients.value.splice(index, 1)
 }
 
-// Klik poza dropdown
 function handleClickOutside(event) {
   setTimeout(() => {
     if (dropdownWrapper.value && !dropdownWrapper.value.contains(event.target)) {
@@ -264,6 +282,7 @@ function handleClickOutside(event) {
     }
   }, 0)
 }
+
 function handleIngredientClickOutside(event) {
   setTimeout(() => {
     if (ingredientDropdownWrapper.value && !ingredientDropdownWrapper.value.contains(event.target)) {
@@ -284,10 +303,6 @@ onMounted(async () => {
     const ingredientsRes = await fetch('/ingredients.json')
     availableIngredients.value = await ingredientsRes.json()
 
-    // Alternatywnie z backendu:
-    // const tagsRes = await getTags()
-    // categories.value = tagsRes.data
-
     document.addEventListener('click', handleClickOutside)
     document.addEventListener('click', handleIngredientClickOutside)
   } catch (err) {
@@ -295,7 +310,6 @@ onMounted(async () => {
   }
 })
 
-// Wysłanie formularza
 const submitRecipe = async () => {
   const formData = new FormData()
   formData.append('name', form.value.name)
@@ -322,7 +336,7 @@ const submitRecipe = async () => {
       tags: '',
       image: null,
     }
-    selectedTags.value = []
+    selectedTags.value = {}
     ingredients.value = []
   } catch (err) {
     console.error(err)
