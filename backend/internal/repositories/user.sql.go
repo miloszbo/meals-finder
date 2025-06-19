@@ -122,8 +122,9 @@ func (q *Queries) GetUserTags(ctx context.Context, username string) ([]int32, er
 const insertUserTag = `-- name: InsertUserTag :exec
 INSERT INTO users_tags (username, tag_id)
 SELECT $1::text AS username, t.id AS tag_id FROM tags t
-JOIN tags_types tt ON t.type_id = tt.id
-WHERE t.name = $2::text AND t.name $3::text
+JOIN tags_types tt ON tt.id = t.type_id
+WHERE t.name = $2::text AND tt.name = $3::text
+ON CONFLICT (username, tag_id) DO NOTHING
 `
 
 type InsertUserTagParams struct {

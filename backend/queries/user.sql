@@ -22,8 +22,9 @@ SELECT tag_id FROM users_tags WHERE username = $1;
 -- name: InsertUserTag :exec
 INSERT INTO users_tags (username, tag_id)
 SELECT @username::text AS username, t.id AS tag_id FROM tags t
-JOIN tags_types tt ON t.type_id = tt.id
-WHERE t.name = @tag_name::text AND t.name @tag_type_name::text;
+JOIN tags_types tt ON tt.id = t.type_id
+WHERE t.name = @tag_name::text AND tt.name = @tag_type_name::text
+ON CONFLICT (username, tag_id) DO NOTHING;
 
 -- name: DeleteUserTag :exec
 DELETE FROM users_tags WHERE username = $1 AND tag_id = $2;

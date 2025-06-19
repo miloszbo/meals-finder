@@ -5,7 +5,8 @@ WHERE
   -- User tags
   (NOT EXISTS (SELECT 1 FROM users_tags ut WHERE ut.username = @username::text) OR
 
-  EXISTS (SELECT 1 FROM recipes_tags rt WHERE rt.tag_id = ANY(SELECT tag_id FROM users_tags ut  WHERE ut.username = @username::text)))
+  EXISTS (SELECT 1 FROM recipes_tags rt JOIN users_tags ut ON rt.tag_id = ut.tag_id WHERE
+  ut.username = @username::text AND rt.recipe_id = r.id AND rt.tag_id IN (SELECT tag_id FROM users_tags ut WHERE ut.username = @username::text)))
 
   -- Min preparation time (optional)
   AND (@min_time::int = 0 OR r.time >= @min_time::int)

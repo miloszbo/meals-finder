@@ -93,6 +93,7 @@ func (b *BaseFinderService) FindRecipe(ctx context.Context, recipeParams models.
 		MaxDifficulty: recipeParams.MaxDifficulty,
 		RecipesOffset: recipeParams.Offset,
 		RecipesLimit:  recipeParams.Limit,
+		Username:      recipeParams.Username,
 	})
 
 	return recipes, nil
