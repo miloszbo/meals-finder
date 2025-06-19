@@ -96,7 +96,7 @@ import { reactive, ref, computed, onMounted, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import axios from 'axios'
 import Navbar from '@/components/Navbar.vue'
-import { getAllRecipes } from '@/api/axios'
+import { getAllRecipes, getTags } from '@/api/axios'
 
 const route = useRoute()
 const router = useRouter()
@@ -206,7 +206,7 @@ function handleClickOutside(event) {
 
 onMounted(async () => {
   try {
-    const tagsRes = await axios.get('/tags.json')
+    const tagsRes = await getTags()
     categories.value = tagsRes.data
 
     selectedTags.value = { ...route.query }
