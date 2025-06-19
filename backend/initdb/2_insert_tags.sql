@@ -4,14 +4,14 @@ VALUES
   ('Region'),
   ('Rodzaj'),
   ('Alergie'),
-  ('Składniki_odżywcze'),
+  ('Składniki odżywcze'),
   ('Inne');
 
-INSERT INTO tags (name, type_id) VALUES ('wegetariańska', 1);
-INSERT INTO tags (name, type_id) VALUES ('vegańska', 1);
-INSERT INTO tags (name, type_id) VALUES ('mięsna', 1);
-INSERT INTO tags (name, type_id) VALUES ('jarska', 1);
-INSERT INTO tags (name, type_id) VALUES ('keto', 1);
+INSERT INTO tags (name, type_id) VALUES ('Wegetariańska', 1);
+INSERT INTO tags (name, type_id) VALUES ('Wegańska', 1);
+INSERT INTO tags (name, type_id) VALUES ('Mięsna', 1);
+INSERT INTO tags (name, type_id) VALUES ('Jarska', 1);
+INSERT INTO tags (name, type_id) VALUES ('Keto', 1);
 INSERT INTO tags (name, type_id) VALUES ('Kuchnia europejska', 2);
 INSERT INTO tags (name, type_id) VALUES ('Kuchnia azjatycka', 2);
 INSERT INTO tags (name, type_id) VALUES ('Kuchnia afrykańska', 2);
@@ -88,7 +88,7 @@ INSERT INTO tags (name, type_id) VALUES ('Dania jednogarnkowe', 3);
 INSERT INTO tags (name, type_id) VALUES ('Makarony', 3);
 INSERT INTO tags (name, type_id) VALUES ('Grillowane', 3);
 INSERT INTO tags (name, type_id) VALUES ('Smażone', 3);
-INSERT INTO tags (name, type_id) VALUES ('na parze', 3);
+INSERT INTO tags (name, type_id) VALUES ('Na parze', 3);
 INSERT INTO tags (name, type_id) VALUES ('Pieczone', 3);
 INSERT INTO tags (name, type_id) VALUES ('Duszone', 3);
 INSERT INTO tags (name, type_id) VALUES ('Kasze', 3);
@@ -127,5 +127,5 @@ INSERT INTO tags (name, type_id) VALUES ('Gorczyca', 4);
 INSERT INTO tags (name, type_id) VALUES ('Lupina', 4);
 INSERT INTO tags (name, type_id) VALUES ('Seler', 4);
 INSERT INTO tags (name, type_id) VALUES ('Siarczyny i dodatki sztuczne', 4);
-INSERT INTO tags (name, type_id) VALUES ('lekkostrawne', 6);
-INSERT INTO tags (name, type_id) VALUES ('tanie', 6);
+INSERT INTO tags (name, type_id) VALUES ('Lekkostrawne', 6);
+INSERT INTO tags (name, type_id) VALUES ('Tanie', 6);
