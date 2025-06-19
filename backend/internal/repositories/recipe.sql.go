@@ -62,76 +62,82 @@ const filterRecipesByTagNamesAndParams = `-- name: FilterRecipesByTagNamesAndPar
 SELECT r.id, r.name, r.time, r.difficulty
 FROM recipes r
 WHERE
+  -- User tags
+  (NOT EXISTS (SELECT 1 FROM users_tags ut WHERE ut.username = $1::text) OR
+
+  EXISTS (SELECT 1 FROM recipes_tags rt WHERE rt.tag_id = ANY(SELECT tag_id FROM users_tags ut  WHERE ut.username = $1::text)))
+
   -- Min preparation time (optional)
-  ($1::int = 0 OR r.time >= $1::int)
+  AND ($2::int = 0 OR r.time >= $2::int)
 
   -- Max preparation time (optional)
-  AND ($2::int = 0 OR r.time <= $2::int)
+  AND ($3::int = 0 OR r.time <= $3::int)
 
   -- Min difficulty (optional)
-  AND ($3::int = 0 OR r.difficulty >= $3::int)
+  AND ($4::int = 0 OR r.difficulty >= $4::int)
 
   -- Max difficulty (optional)
-  AND ($4::int = 0 OR r.difficulty <= $4::int)
+  AND ($5::int = 0 OR r.difficulty <= $5::int)
 
   -- Type 1 (Dieta): OR within, AND across types
-  AND ($5::text[] IS NULL OR EXISTS (
-    SELECT 1 FROM recipes_tags rt
-    JOIN tags t ON t.id = rt.tag_id
-    WHERE rt.recipe_id = r.id
-      AND t.type_id = 1
-      AND t.name = ANY($5::text[])
-  ))
-
-  -- Type 2 (Region)
   AND ($6::text[] IS NULL OR EXISTS (
     SELECT 1 FROM recipes_tags rt
     JOIN tags t ON t.id = rt.tag_id
     WHERE rt.recipe_id = r.id
-      AND t.type_id = 2
+      AND t.type_id = 1
       AND t.name = ANY($6::text[])
   ))
 
-  -- Type 3 (Rodzaj)
+  -- Type 2 (Region)
   AND ($7::text[] IS NULL OR EXISTS (
     SELECT 1 FROM recipes_tags rt
     JOIN tags t ON t.id = rt.tag_id
     WHERE rt.recipe_id = r.id
-      AND t.type_id = 3
+      AND t.type_id = 2
       AND t.name = ANY($7::text[])
   ))
 
+  -- Type 3 (Rodzaj)
+  AND ($8::text[] IS NULL OR EXISTS (
+    SELECT 1 FROM recipes_tags rt
+    JOIN tags t ON t.id = rt.tag_id
+    WHERE rt.recipe_id = r.id
+      AND t.type_id = 3
+      AND t.name = ANY($8::text[])
+  ))
+
   -- Type 4 (Alergie): must NOT include any of these
-  AND ($8::text[] IS NULL OR NOT EXISTS (
+  AND ($9::text[] IS NULL OR NOT EXISTS (
     SELECT 1 FROM recipes_tags rt
     JOIN tags t ON t.id = rt.tag_id
     WHERE rt.recipe_id = r.id
       AND t.type_id = 4
-      AND t.name = ANY($8::text[])
-  ))
-
-  -- Type 5 (Składniki_odżywcze)
-  AND ($9::text[] IS NULL OR EXISTS (
-    SELECT 1 FROM recipes_tags rt
-    JOIN tags t ON t.id = rt.tag_id
-    WHERE rt.recipe_id = r.id
-      AND t.type_id = 5
       AND t.name = ANY($9::text[])
   ))
 
-  -- Type 6 (Inne)
+  -- Type 5 (Składniki odżywcze)
   AND ($10::text[] IS NULL OR EXISTS (
     SELECT 1 FROM recipes_tags rt
     JOIN tags t ON t.id = rt.tag_id
     WHERE rt.recipe_id = r.id
-      AND t.type_id = 6
+      AND t.type_id = 5
       AND t.name = ANY($10::text[])
   ))
 
-ORDER BY r.id LIMIT $12::int OFFSET $11::int
+  -- Type 6 (Inne)
+  AND ($11::text[] IS NULL OR EXISTS (
+    SELECT 1 FROM recipes_tags rt
+    JOIN tags t ON t.id = rt.tag_id
+    WHERE rt.recipe_id = r.id
+      AND t.type_id = 6
+      AND t.name = ANY($11::text[])
+  ))
+
+ORDER BY r.id LIMIT $13::int OFFSET $12::int
 `
 
 type FilterRecipesByTagNamesAndParamsParams struct {
+	Username      string   `json:"username"`
 	MinTime       int32    `json:"min_time"`
 	MaxTime       int32    `json:"max_time"`
 	MinDifficulty int32    `json:"min_difficulty"`
@@ -155,6 +161,7 @@ type FilterRecipesByTagNamesAndParamsRow struct {
 
 func (q *Queries) FilterRecipesByTagNamesAndParams(ctx context.Context, arg FilterRecipesByTagNamesAndParamsParams) ([]FilterRecipesByTagNamesAndParamsRow, error) {
 	rows, err := q.db.Query(ctx, filterRecipesByTagNamesAndParams,
+		arg.Username,
 		arg.MinTime,
 		arg.MaxTime,
 		arg.MinDifficulty,

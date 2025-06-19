@@ -13,6 +13,7 @@ type RecipesFinderParams struct {
 	MaxDifficulty int32
 	Limit         int32
 	Offset        int32
+	Username      string
 }
 
 type Ingredient struct {
