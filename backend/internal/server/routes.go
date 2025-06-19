@@ -41,6 +41,8 @@ func SetupRoutes() http.Handler {
 	authMux.HandleFunc("GET /re/{id}", finderHandler.GetRecipe)
 	authMux.HandleFunc("PATCH /user/settings", userHandler.UpdateUserSettings)
 	authMux.HandleFunc("POST /user/tags", userHandler.AddUserTag)
+	authMux.HandleFunc("DELETE /user/tags/{tagName}", userHandler.DeleteUserTag)
+	authMux.HandleFunc("GET /user/tags", userHandler.DisplayUserTags)
 
 	mux.Handle("/", middlewares.Authentication(authMux))
 

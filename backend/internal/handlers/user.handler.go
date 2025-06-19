@@ -155,3 +155,39 @@ func (u *UserHandler) AddUserTag(w http.ResponseWriter, r *http.Request) {
 
 	w.WriteHeader(http.StatusOK)
 }
+
+func (u *UserHandler) DeleteUserTag(w http.ResponseWriter, r *http.Request) {
+	tagName := r.PathValue("tagName")
+	ctx := r.Context()
+	claims, ok := ctx.Value("claims").(jwt.MapClaims)
+	if !ok {
+		http.Error(w, "token was empty", http.StatusUnauthorized)
+	}
+
+	err := u.UserService.DeleteUserTag(ctx, claims["sub"].(string), tagName)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "internal error", http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
+}
+
+func (u *UserHandler) DisplayUserTags(w http.ResponseWriter, r *http.Request) {
+	ctx := r.Context()
+	claims, ok := ctx.Value("claims").(jwt.MapClaims)
+	if !ok {
+		http.Error(w, "token was empty", http.StatusUnauthorized)
+	}
+
+	data, err := u.UserService.DisplayUserTag(ctx, claims["sub"].(string))
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "internal error", http.StatusInternalServerError)
+	}
+
+	jsonData, _ := json.Marshal(data)
+
+	w.Write(jsonData)
+	w.WriteHeader(http.StatusOK)
+}

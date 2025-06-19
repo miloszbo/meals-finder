@@ -27,7 +27,12 @@ WHERE t.name = @tag_name::text AND tt.name = @tag_type_name::text
 ON CONFLICT (username, tag_id) DO NOTHING;
 
 -- name: DeleteUserTag :exec
-DELETE FROM users_tags WHERE username = $1 AND tag_id = $2;
+DELETE FROM users_tags USING tags WHERE users_tags.tag_id = tags.id AND users_tags.username = @username::text AND tags.name = @tag_name::text;
+
+-- name: DisplayUserTag :many
+SELECT t.name AS value, tt.name AS category FROM tags t 
+JOIN tags_types tt ON tt.id = t.type_id
+JOIN users_tags ut ON ut.tag_id = t.id WHERE ut.username = @username::text;
 
 -- name: UpdateUserSettings :exec
 UPDATE users

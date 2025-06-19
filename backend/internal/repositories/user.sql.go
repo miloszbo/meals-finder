@@ -45,17 +45,48 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) error {
 }
 
 const deleteUserTag = `-- name: DeleteUserTag :exec
-DELETE FROM users_tags WHERE username = $1 AND tag_id = $2
+DELETE FROM users_tags USING tags WHERE users_tags.tag_id = tags.id AND users_tags.username = $1::text AND tags.name = $2::text
 `
 
 type DeleteUserTagParams struct {
 	Username string `json:"username"`
-	TagID    int32  `json:"tag_id"`
+	TagName  string `json:"tag_name"`
 }
 
 func (q *Queries) DeleteUserTag(ctx context.Context, arg DeleteUserTagParams) error {
-	_, err := q.db.Exec(ctx, deleteUserTag, arg.Username, arg.TagID)
+	_, err := q.db.Exec(ctx, deleteUserTag, arg.Username, arg.TagName)
 	return err
+}
+
+const displayUserTag = `-- name: DisplayUserTag :many
+SELECT t.name AS value, tt.name AS category FROM tags t 
+JOIN tags_types tt ON tt.id = t.type_id
+JOIN users_tags ut ON ut.tag_id = t.id WHERE ut.username = $1::text
+`
+
+type DisplayUserTagRow struct {
+	Value    string `json:"value"`
+	Category string `json:"category"`
+}
+
+func (q *Queries) DisplayUserTag(ctx context.Context, username string) ([]DisplayUserTagRow, error) {
+	rows, err := q.db.Query(ctx, displayUserTag, username)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []DisplayUserTagRow
+	for rows.Next() {
+		var i DisplayUserTagRow
+		if err := rows.Scan(&i.Value, &i.Category); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
 }
 
 const getUserData = `-- name: GetUserData :one
