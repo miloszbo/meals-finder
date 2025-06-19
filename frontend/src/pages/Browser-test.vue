@@ -15,57 +15,60 @@
           class="input input-sm input-bordered w-full mb-2"
           @focus="dropdownVisible = true"
         />
-<div
-  v-if="dropdownVisible"
-  class="absolute z-10 bg-base-100 border border-base-content mt-1 w-full rounded-box shadow max-h-96 overflow-y-auto"
->
-  <div
-    v-for="category in filteredCategories"
-    :key="category.name"
-    class="border-b px-4 py-2"
-  >
-    <div
-      @click="toggleCategory(category.name)"
-      class="cursor-pointer font-semibold hover:text-primary flex justify-between items-center"
-    >
-      {{ category.name }}
-      <span class="text-xs">{{ expandedCategory === category.name ? '▲' : '▼' }}</span>
-    </div>
-
-    <!-- rozwijane tagi -->
-    <div
-      v-if="expandedCategory === category.name"
-      class="mt-2 max-h-40 overflow-y-auto pl-2 space-y-1"
-    >
-      <div
-        v-for="tag in limitedTags(category.tags)"
-        :key="tag"
-        @click.stop="addTag(tag)"
-        class="px-3 py-1 hover:bg-base-300 rounded cursor-pointer text-sm"
-      >
-        {{ tag }}
-      </div>
-    </div>
-  </div>
-</div>
-    </div>
-
-      <div class="mt-4" v-if="Object.keys(selectedTags).length">
-        <h3 class="text-md font-semibold mb-2">Selected Tags:</h3>
-        <div class="flex flex-wrap gap-2">
-          <span
-            v-for="(value, category) in selectedTags"
-            :key="category"
-            @click="removeTag(value)"
-            class="bg-primary text-white rounded-full px-4 py-1 text-sm font-semibold cursor-pointer hover:bg-red-500"
+        <div
+          v-if="dropdownVisible"
+          class="absolute z-10 bg-base-100 border border-base-content mt-1 w-full rounded-box shadow max-h-96 overflow-y-auto"
+        >
+          <div
+            v-for="category in filteredCategories"
+            :key="category.name"
+            class="border-b px-4 py-2"
           >
-            {{ value }}
+            <div
+              @click="toggleCategory(category.name)"
+              class="cursor-pointer font-semibold hover:text-primary flex justify-between items-center"
+            >
+              {{ category.name }}
+              <span class="text-xs">{{ expandedCategory === category.name ? '▲' : '▼' }}</span>
+            </div>
+
+            <div
+              v-if="expandedCategory === category.name"
+              class="mt-2 max-h-40 overflow-y-auto pl-2 space-y-1"
+            >
+              <div
+                v-for="tag in limitedTags(category.tags)"
+                :key="tag"
+                @click.stop="addTag(tag, category.name)"
+                class="px-3 py-1 hover:bg-base-300 rounded cursor-pointer text-sm"
+              >
+                {{ tag }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 w-full break-words" v-if="Object.keys(selectedTags).length">
+        <h3 class="text-md font-semibold mb-2">Selected Tags:</h3>
+        <div class="flex flex-wrap gap-2 w-full">
+          <span
+            v-for="(tags, category) in selectedTags"
+            :key="category"
+          >
+            <span
+              v-for="tag in tags"
+              :key="tag"
+              @click="removeTag(category, tag)"
+              class="bg-primary text-white rounded-full px-4 py-1 text-sm font-semibold cursor-pointer hover:bg-red-500 truncate max-w-full inline-block"
+            >
+              {{ tag }}
+            </span>
           </span>
         </div>
       </div>
     </aside>
 
-    <!-- Recipe Grid -->
     <main class="flex-1 p-6 overflow-y-auto max-h-[calc(100vh-4rem)]">
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         <router-link
@@ -92,9 +95,8 @@
 </template>
 
 <script setup>
-import { reactive, ref, computed, onMounted, watch } from 'vue'
+import { reactive, ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import axios from 'axios'
 import Navbar from '@/components/Navbar.vue'
 import { getAllRecipes, getTags } from '@/api/axios'
 
@@ -106,24 +108,25 @@ const recipes = reactive([])
 const filterQuery = ref('')
 const dropdownVisible = ref(false)
 const dropdownWrapper = ref(null)
-
 const selectedTags = ref({})
 
+// Mapowanie tagów do kategorii
 const tagToCategory = computed(() => {
   const map = {}
   categories.value.forEach(cat => {
     cat.tags.forEach(tag => {
-      map[tag] = cat.name.toLowerCase().replace(/\s/g, '_')
+      map[tag] = cat.name
     })
   })
   return map
 })
 
+// Filtrowanie kategorii pasujących do inputa
 const filteredCategories = computed(() =>
   categories.value.filter(cat =>
     cat.tags.some(tag =>
       tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
-      !Object.values(selectedTags.value).includes(tag)
+      !(selectedTags.value[cat.name] || []).includes(tag)
     )
   )
 )
@@ -132,70 +135,66 @@ function limitedTags(tags) {
   return tags
     .filter(tag =>
       tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
-      !Object.values(selectedTags.value).includes(tag)
+      !Object.values(selectedTags.value).flat().includes(tag)
     )
     .slice(0, 10)
 }
 
-const allTags = computed(() =>
-  categories.value.flatMap(cat => cat.tags)
-)
-
-const filteredTags = computed(() =>
-  allTags.value.filter(tag =>
-    tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
-    !Object.values(selectedTags.value).includes(tag)
-  )
-)
-
 const expandedCategory = ref(null)
-
 function toggleCategory(name) {
   expandedCategory.value = expandedCategory.value === name ? null : name
 }
 
 const filteredRecipes = computed(() => recipes.value)
 
+// Aktualizacja URL
 function updateUrlWithTags() {
-  router.replace({ query: { ...selectedTags.value } })
+  const query = {}
+  for (const [cat, tags] of Object.entries(selectedTags.value)) {
+    query[cat] = tags.join(',')
+  }
+  router.replace({ query })
 }
 
+// Pobranie przepisów z uwzględnieniem wielu tagów per kategoria
 async function fetchRecipes() {
   try {
-    console.log(route.query)
-    const { data } = await getAllRecipes(selectedTags.value)
+    const parsedTags = {}
+    for (const [cat, val] of Object.entries(route.query)) {
+      parsedTags[cat] = Array.isArray(val) ? val : val.split(',')
+    }
+    const { data } = await getAllRecipes(parsedTags)
     recipes.value = data
   } catch (err) {
     console.error('Błąd pobierania przepisów:', err)
   }
 }
 
-function addTag(tag) {
-  const category = tagToCategory.value[tag]
-  if (!category) return
-
-  selectedTags.value = {
-    ...selectedTags.value,
-    [category]: tag
+// Dodanie tagu
+function addTag(tag, category) {
+  if (!selectedTags.value[category]) {
+    selectedTags.value[category] = []
   }
-
-  updateUrlWithTags()
-  filterQuery.value = ''
-  dropdownVisible.value = false
-  fetchRecipes()
-}
-
-function removeTag(tag) {
-  const entry = Object.entries(selectedTags.value).find(([_, v]) => v === tag)
-  if (entry) {
-    const [category] = entry
-    delete selectedTags.value[category]
-    selectedTags.value = { ...selectedTags.value }
+  if (!selectedTags.value[category].includes(tag)) {
+    selectedTags.value[category].push(tag)
     updateUrlWithTags()
+    filterQuery.value = ''
+    dropdownVisible.value = false
     fetchRecipes()
   }
 }
 
+// Usunięcie tagu
+function removeTag(category, tag) {
+  selectedTags.value[category] = selectedTags.value[category].filter(t => t !== tag)
+  if (selectedTags.value[category].length === 0) {
+    delete selectedTags.value[category]
+  }
+  updateUrlWithTags()
+  fetchRecipes()
+}
+
+// Ukrywanie dropdownu
 function handleClickOutside(event) {
   setTimeout(() => {
     if (dropdownWrapper.value && !dropdownWrapper.value.contains(event.target)) {
@@ -206,10 +205,14 @@ function handleClickOutside(event) {
 
 onMounted(async () => {
   try {
-    const tagsRes = await getTags()
-    categories.value = tagsRes.data
+    const localTags = await fetch('/tags.json')
+    categories.value = await localTags.json()
 
-    selectedTags.value = { ...route.query }
+    const parsed = {}
+    for (const [cat, val] of Object.entries(route.query)) {
+      parsed[cat] = Array.isArray(val) ? val : val.split(',')
+    }
+    selectedTags.value = parsed
     await fetchRecipes()
   } catch (err) {
     console.error('Błąd ładowania danych:', err)
