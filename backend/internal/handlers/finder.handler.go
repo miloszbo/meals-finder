@@ -17,11 +17,6 @@ type FinderHandler struct {
 }
 
 func (f *FinderHandler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
-	ctx := r.Context()
-	claims, ok := ctx.Value("claims").(jwt.MapClaims)
-	if !ok {
-		http.Error(w, "token was empty", http.StatusUnauthorized)
-	}
 	var recipe models.RecipeAdd
 
 	if err := json.NewDecoder(r.Body).Decode(&recipe); err != nil {
@@ -30,7 +25,7 @@ func (f *FinderHandler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := f.FinderService.CreateRecipe(r.Context(), &recipe, claims["sub"].(string)); err != nil {
+	if err := f.FinderService.CreateRecipe(r.Context(), &recipe); err != nil {
 		log.Println(err.Error())
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
