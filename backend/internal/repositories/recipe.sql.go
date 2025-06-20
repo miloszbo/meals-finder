@@ -27,14 +27,13 @@ func (q *Queries) AddTagsForRecipe(ctx context.Context, arg AddTagsForRecipePara
 }
 
 const createRecipe = `-- name: CreateRecipe :one
-INSERT INTO recipes (name,recipe,ingredients,time,difficulty,username) VALUES 
+INSERT INTO recipes (name,recipe,ingredients,time,difficulty) VALUES 
 (
   $1::text,
   $2::text,
   $3,
   $4::int,
-  $5::int,
-  $6::text
+  $5::int
 ) RETURNING id
 `
 
@@ -44,7 +43,6 @@ type CreateRecipeParams struct {
 	Ingredients models.IngredientsJson `json:"ingredients"`
 	Time        int32                  `json:"time"`
 	Difficulty  int32                  `json:"difficulty"`
-	Username    string                 `json:"username"`
 }
 
 func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (int32, error) {
@@ -54,7 +52,6 @@ func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (int
 		arg.Ingredients,
 		arg.Time,
 		arg.Difficulty,
-		arg.Username,
 	)
 	var id int32
 	err := row.Scan(&id)
@@ -255,18 +252,11 @@ func (q *Queries) GetRecipeWithId(ctx context.Context, id int32) (Recipe, error)
 
 const getTagId = `-- name: GetTagId :one
 SELECT t.id AS tag_id
-FROM tags t
-JOIN tags_types tt ON t.type_id = tt.id
-WHERE tags_types.name = $1::text AND tags.name = $2::text
+FROM tags t WHERE t.name = $1::text
 `
 
-type GetTagIdParams struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
-}
-
-func (q *Queries) GetTagId(ctx context.Context, arg GetTagIdParams) (int32, error) {
-	row := q.db.QueryRow(ctx, getTagId, arg.Key, arg.Value)
+func (q *Queries) GetTagId(ctx context.Context, name string) (int32, error) {
+	row := q.db.QueryRow(ctx, getTagId, name)
 	var tag_id int32
 	err := row.Scan(&tag_id)
 	return tag_id, err

@@ -38,10 +38,10 @@ type RecipesTag struct {
 }
 
 type Review struct {
-	ID          int32 `json:"id"`
-	RecipeID    int32 `json:"recipe_id"`
-	UserID      int32 `json:"user_id"`
-	ReviewScore int32 `json:"review_score"`
+	ID          int32  `json:"id"`
+	RecipeID    int32  `json:"recipe_id"`
+	Username    string `json:"username"`
+	ReviewScore int32  `json:"review_score"`
 }
 
 type Tag struct {
