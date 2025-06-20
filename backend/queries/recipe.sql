@@ -86,14 +86,13 @@ JOIN tags_types tt ON t.type_id = tt.id
 ORDER BY tt.id, t.name;
 
 -- name: CreateRecipe :one
-INSERT INTO recipes (name,recipe,ingredients,time,difficulty,username) VALUES 
+INSERT INTO recipes (name,recipe,ingredients,time,difficulty) VALUES 
 (
   @name::text,
   @recipe::text,
   @ingredients,
   @time::int,
-  @difficulty::int,
-  @username::text
+  @difficulty::int
 ) RETURNING id;
 
 -- name: AddTagsForRecipe :exec
@@ -102,6 +101,4 @@ INSERT INTO recipes_tags (recipe_id, tag_id) VALUES
 
 -- name: GetTagId :one
 SELECT t.id AS tag_id
-FROM tags t
-JOIN tags_types tt ON t.type_id = tt.id
-WHERE tags_types.name = @key::text AND tags.name = @value::text;
+FROM tags t WHERE t.name = @name::text;
