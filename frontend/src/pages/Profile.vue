@@ -1,3 +1,5 @@
+import { addUserTags } from "../api/axios"
+
 <template>
   <div class="bg-base-200 text-white min-h-screen overflow-hidden flex flex-col">
     <div class="h-[80px] shrink-0">
@@ -187,56 +189,59 @@
           class="input input-sm input-bordered w-full mb-2"
           @focus="dropdownVisible = true"
         />
-<div
-  v-if="dropdownVisible"
-  class="absolute z-10 bg-base-100 border border-base-content mt-1 w-full rounded-box shadow max-h-96 overflow-y-auto"
->
-  <div
-    v-for="category in filteredCategories"
-    :key="category.name"
-    class="border-b px-4 py-2"
-  >
-    <div
-      @click="toggleCategory(category.name)"
-      class="cursor-pointer font-semibold hover:text-primary flex justify-between items-center"
-    >
-      {{ category.name }}
-      <span class="text-xs">{{ expandedCategory === category.name ? '▲' : '▼' }}</span>
-    </div>
-
-    <!-- rozwijane tagi -->
-    <div
-      v-if="expandedCategory === category.name"
-      class="mt-2 max-h-40 overflow-y-auto pl-2 space-y-1"
-    >
-      <div
-        v-for="tag in limitedTags(category.tags)"
-        :key="tag"
-        @click.stop="addTag(tag)"
-        class="px-3 py-1 hover:bg-base-300 rounded cursor-pointer text-sm"
-      >
-        {{ tag }}
-      </div>
-    </div>
-  </div>
-</div>
-    </div>
-
-      <div class="mt-4" v-if="Object.keys(selectedTags).length">
-        <h3 class="text-md font-semibold mb-2">Selected Tags:</h3>
-        <div class="flex flex-wrap gap-2">
-          <span
-            v-for="(value, category) in selectedTags"
-            :key="category"
-            @click="removeTag(value)"
-            class="bg-primary text-white rounded-full px-4 py-1 text-sm font-semibold cursor-pointer hover:bg-red-500"
+        <div
+          v-if="dropdownVisible"
+          class="absolute z-10 bg-base-100 border border-base-content mt-1 w-full rounded-box shadow max-h-96 overflow-y-auto"
+        >
+          <div
+            v-for="category in filteredCategories"
+            :key="category.name"
+            class="border-b px-4 py-2"
           >
-            {{ value }}
+            <div
+              @click="toggleCategory(category.name)"
+              class="cursor-pointer font-semibold hover:text-primary flex justify-between items-center"
+            >
+              {{ category.name }}
+              <span class="text-xs">{{ expandedCategory === category.name ? '▲' : '▼' }}</span>
+            </div>
+
+            <div
+              v-if="expandedCategory === category.name"
+              class="mt-2 max-h-40 overflow-y-auto pl-2 space-y-1"
+            >
+              <div
+                v-for="tag in limitedTags(category.tags)"
+                :key="tag"
+                @click.stop="addTag(tag, category.name)"
+                class="px-3 py-1 hover:bg-base-300 rounded cursor-pointer text-sm"
+              >
+                {{ tag }}
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="mt-4 w-full break-words" v-if="Object.keys(selectedTags).length">
+        <h3 class="text-md font-semibold mb-2">Selected Tags:</h3>
+        <div class="flex flex-wrap gap-2 w-full">
+          <span
+            v-for="(tags, category) in selectedTags"
+            :key="category"
+          >
+            <span
+              v-for="tag in tags"
+              :key="tag"
+              @click="removeTag(category, tag)"
+              class="bg-primary text-white rounded-full px-4 py-1 text-sm font-semibold cursor-pointer hover:bg-red-500 truncate max-w-full inline-block"
+            >
+              {{ tag }}
+            </span>
           </span>
         </div>
       </div>
-
-        </div>
+      </div>
       </main>
     </div>
   </div>
@@ -282,46 +287,72 @@ const dropdownWrapper = ref(null)
 
 const expandedCategory = ref(null)
 
-function toggleCategory(name) {
-  expandedCategory.value = expandedCategory.value === name ? null : name
-}
-
+// Mapowanie tagów do kategorii
 const tagToCategory = computed(() => {
   const map = {}
   categories.value.forEach(cat => {
     cat.tags.forEach(tag => {
-      map[tag] = cat.name.replace(/\s/g, '_')
+      map[tag] = cat.name
     })
   })
-  console.log("FileteredtagToCat")
-  console.log(categories.value)
   return map
 })
 
-function capitalize(str) {
-  return str.charAt(0).toUpperCase() + str.slice(1)
-}
-
-const allTags = computed(() =>
-  categories.value.flatMap(cat => cat.tags)
-)
-
-const filteredTags = computed(() =>
-  allTags.value.filter(tag =>
-    tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
-    !Object.values(selectedTags.value).includes(tag)
-  )
-)
-
+// Filtrowanie kategorii pasujących do inputa
 const filteredCategories = computed(() =>
   categories.value.filter(cat =>
     cat.tags.some(tag =>
-      tag.startsWith(filterQuery.value) &&
-      !Object.values(selectedTags.value).includes(tag)
+      tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
+      !(selectedTags.value[cat.name] || []).includes(tag)
     )
   )
 )
 
+function limitedTags(tags) {
+  return tags
+    .filter(tag =>
+      tag.toLowerCase().startsWith(filterQuery.value.toLowerCase()) &&
+      !Object.values(selectedTags.value).flat().includes(tag)
+    )
+    .slice(0, 10)
+}
+
+function toggleCategory(name) {
+  expandedCategory.value = expandedCategory.value === name ? null : name
+}
+
+const filteredRecipes = computed(() => recipes.value)
+
+async function addTag(tag,category) {
+  if (!selectedTags.value[category]) {
+    selectedTags.value[category] = []
+  }
+  if (!selectedTags.value[category].includes(tag)) {
+    selectedTags.value[category].push(tag)
+    filterQuery.value = ''
+    dropdownVisible.value = false
+    const payload = {
+      name: tag,
+      type: category
+    }
+    const res = await addUserTags(payload)
+  }
+}
+
+async function removeTag(category, tag) {
+  const tags = selectedTags.value[category]
+  if (!Array.isArray(tags)) {
+    console.warn(`Tags for category ${category} is not an array`, tags)
+    return
+  }
+  selectedTags.value[category] = tags.filter(t => t !== tag)
+  if (selectedTags.value[category].length === 0) {
+    delete selectedTags.value[category]
+  }
+  await deleteUserTags(tag)
+}
+
+// Ukrywanie dropdownu
 function handleClickOutside(event) {
   setTimeout(() => {
     if (dropdownWrapper.value && !dropdownWrapper.value.contains(event.target)) {
@@ -330,47 +361,19 @@ function handleClickOutside(event) {
   }, 0)
 }
 
-function limitedTags(tags) {
-  return tags
-    .filter(tag =>
-      tag.startsWith(filterQuery.value) &&
-      !Object.values(selectedTags.value).includes(tag)
-    )
-    .slice(0, 10)
+function normalizeTags(data) {
+  const result = {}
+  data.forEach(item => {
+    if (!result[item.category]) {
+      result[item.category] = []
+    }
+    if (!result[item.category].includes(item.value)) {
+      result[item.category].push(item.value)
+    }
+  })
+  return result
 }
 
-async function addTag(tag) {
-  const category = tagToCategory.value[tag]
-  if (!category) return
-
-  selectedTags.value = {
-    ...selectedTags.value,
-    [category]: tag
-  }
-
-  console.log(selectedTags)
-  console.log("\n")
-  console.log(selectedTags.value)
-
-  const payload = {
-    name: tag,
-    type: capitalize(category)
-  }
-  
-  filterQuery.value = ''
-  dropdownVisible.value = false
-  const res = await addUserTags(payload)
-}
-
-async function removeTag(tag) {
-  const entry = Object.entries(selectedTags.value).find(([_, v]) => v === tag)
-  if (entry) {
-    const [category] = entry
-    delete selectedTags.value[category]
-    selectedTags.value = { ...selectedTags.value }
-    const res = await deleteUserTags(tag.value)
-  }
-}
 
 onMounted(async () => {
   try {
@@ -378,7 +381,7 @@ onMounted(async () => {
     categories.value = tagsRes.data
 
     const res = await displayUserTags()
-    selectedTags.value = { ...res.data }
+    selectedTags.value = normalizeTags(res.data)
   } catch (err) {
     console.error('Błąd ładowania danych:', err)
   }
@@ -393,4 +396,6 @@ onMounted(async () => {
 function save(field) {
   console.log('Zapisuję', field, '->', form.value[field])
 }
+
+
 </script>

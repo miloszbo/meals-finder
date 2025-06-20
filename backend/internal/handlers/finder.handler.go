@@ -130,12 +130,12 @@ func (f *FinderHandler) FindRecipes(w http.ResponseWriter, r *http.Request) {
 	maxDifficulty := 5
 
 	recipeParams := models.RecipesFinderParams{
-		Diet:          queries["dieta"],
-		Region:        queries["region"],
-		RecipeType:    queries["rodzaj"],
-		Allergies:     queries["alergeny"],
-		Nutrients:     queries["skladnikiOdzywcze"],
-		Others:        queries["inne"],
+		Diet:          queries["Dieta"],
+		Region:        queries["Region"],
+		RecipeType:    queries["Rodzaj"],
+		Allergies:     queries["Alergeny"],
+		Nutrients:     queries["Skladniki Odżywcze"],
+		Others:        queries["Inne"],
 		MinTime:       int32(minTime),
 		MaxTime:       int32(maxTime),
 		MinDifficulty: int32(minDifficulty),
