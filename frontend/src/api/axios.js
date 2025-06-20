@@ -35,12 +35,8 @@ export const logoutUser = () =>
 export const getTags = () =>
   api.get('/tags')
 
-export const addRecipe = (formData) =>
-  api.post('/recipes', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
+export const addRecipe = (data) =>
+  api.post('/recipe', data)
 
 export const addUserTags = (data) =>
   api.post('/user/tags', data)
