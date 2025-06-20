@@ -6,6 +6,18 @@ const api = axios.create({
         'Content-Type':'application/json'
     },
     withCredentials:true,
+    paramsSerializer: function (params) {
+    const searchParams = new URLSearchParams()
+    for (const key in params) {
+      const value = params[key]
+      if (Array.isArray(value)) {
+        value.forEach(val => searchParams.append(key, val)) // No key + []
+      } else {
+        searchParams.append(key, value)
+      }
+    }
+    return searchParams.toString()
+  }
 })
 
 export const getAllRecipes = (params) =>
@@ -29,5 +41,14 @@ export const addRecipe = (formData) =>
       'Content-Type': 'multipart/form-data'
     }
   })
+
+export const addUserTags = (data) =>
+  api.post('/user/tags', data)
+
+export const deleteUserTags = (tagName) =>
+  api.delete(`/user/tags/${tagName}`)
+
+export const displayUserTags = () =>
+  api.get('/user/tags')
 
 export default api

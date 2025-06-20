@@ -22,6 +22,8 @@ type UserService interface {
 	GetUser(ctx context.Context, username string) (repository.GetUserDataRow, error)
 	UpdateUserSettings(ctx context.Context, req *models.UpdateUserSettingsRequest, username string) error
 	AddUserTag(ctx context.Context, username string, req *models.UserTag) error
+	DisplayUserTag(ctx context.Context, username string) ([]repository.DisplayUserTagRow, error)
+	DeleteUserTag(ctx context.Context, username string, tagName string) error
 }
 
 type BaseUserService struct {
@@ -133,6 +135,31 @@ func (s *BaseUserService) AddUserTag(ctx context.Context, username string, userT
 	}
 
 	return nil
+}
+
+func (s *BaseUserService) DeleteUserTag(ctx context.Context, username string, tagName string) error {
+	err := s.Repo.DeleteUserTag(ctx, repository.DeleteUserTagParams{
+		Username: username,
+		TagName:  tagName,
+	})
+
+	if err != nil {
+		log.Println(err.Error())
+		return err
+	}
+
+	return nil
+}
+
+func (s *BaseUserService) DisplayUserTag(ctx context.Context, username string) ([]repository.DisplayUserTagRow, error) {
+	data, err := s.Repo.DisplayUserTag(ctx, username)
+
+	if err != nil {
+		log.Println(err.Error())
+		return nil, err
+	}
+
+	return data, nil
 }
 
 // For testing

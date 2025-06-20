@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/golang-jwt/jwt/v5"
 	"github.com/miloszbo/meals-finder/internal/models"
 	"github.com/miloszbo/meals-finder/internal/services"
 )
@@ -97,7 +98,12 @@ func (f *FinderHandler) GetRecipe(w http.ResponseWriter, r *http.Request) {
 }
 
 func (f *FinderHandler) FindRecipes(w http.ResponseWriter, r *http.Request) {
-	ctx := context.Background()
+	ctx := r.Context()
+
+	claims, ok := ctx.Value("claims").(jwt.MapClaims)
+	if !ok {
+		http.Error(w, "token was empty", http.StatusUnauthorized)
+	}
 	queries := r.URL.Query()
 
 	page64, err := strconv.ParseInt(r.URL.Query().Get("page"), 10, 32)
@@ -124,18 +130,19 @@ func (f *FinderHandler) FindRecipes(w http.ResponseWriter, r *http.Request) {
 	maxDifficulty := 5
 
 	recipeParams := models.RecipesFinderParams{
-		Diet:          queries["dieta"],
-		Region:        queries["region"],
-		RecipeType:    queries["rodzaj"],
-		Allergies:     queries["alergeny"],
-		Nutrients:     queries["skladnikiOdzywcze"],
-		Others:        queries["inne"],
+		Diet:          queries["Dieta"],
+		Region:        queries["Region"],
+		RecipeType:    queries["Rodzaj"],
+		Allergies:     queries["Alergeny"],
+		Nutrients:     queries["Skladniki Odżywcze"],
+		Others:        queries["Inne"],
 		MinTime:       int32(minTime),
 		MaxTime:       int32(maxTime),
 		MinDifficulty: int32(minDifficulty),
 		MaxDifficulty: int32(maxDifficulty),
 		Limit:         limit,
 		Offset:        offset,
+		Username:      claims["sub"].(string),
 	}
 
 	recipes, err := f.FinderService.FindRecipe(ctx, recipeParams)
