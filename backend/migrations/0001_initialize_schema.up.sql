@@ -22,17 +22,17 @@ CREATE TABLE IF NOT EXISTS recipes (
     recipe VARCHAR(2500) NOT NULL,
     ingredients JSON NOT NULL,
     time INTEGER NOT NULL, -- Preparation time in minutes
-    difficulty INTEGER NOT NULL
+    difficulty INTEGER NOT NULL,
+    username VARCHAR(40) NOT NULL DEFAULT 'admin'
 );
 
 -- Table: reviews
 CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     recipe_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
+    username VARCHAR(40) NOT NULL,
     review_score INTEGER NOT NULL,
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id)
 );
 
 -- Table: ingredients

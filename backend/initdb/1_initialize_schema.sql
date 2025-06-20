@@ -22,7 +22,8 @@ CREATE TABLE IF NOT EXISTS recipes (
     recipe VARCHAR(2500) NOT NULL,
     ingredients JSON NOT NULL,
     time INTEGER NOT NULL, -- Preparation time in minutes
-    difficulty INTEGER NOT NULL
+    difficulty INTEGER NOT NULL,
+    username VARCHAR(40) NOT NULL DEFAULT 'admin'
 );
 
 -- Table: reviews
