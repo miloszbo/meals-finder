@@ -86,13 +86,14 @@ JOIN tags_types tt ON t.type_id = tt.id
 ORDER BY tt.id, t.name;
 
 -- name: CreateRecipe :one
-INSERT INTO recipes (name,recipe,ingredients,time,difficulty) VALUES 
+INSERT INTO recipes (name,recipe,ingredients,time,difficulty,username) VALUES 
 (
   @name::text,
   @recipe::text,
   @ingredients,
   @time::int,
-  @difficulty::int
+  @difficulty::int,
+  @username::text
 ) RETURNING id;
 
 -- name: AddTagsForRecipe :exec

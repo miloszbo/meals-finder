@@ -22,6 +22,7 @@ type Recipe struct {
 	Ingredients models.IngredientsJson `json:"ingredients"`
 	Time        int32                  `json:"time"`
 	Difficulty  int32                  `json:"difficulty"`
+	Username    string                 `json:"username"`
 }
 
 type RecipesIngredient struct {

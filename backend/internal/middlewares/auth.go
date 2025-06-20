@@ -14,18 +14,18 @@ import (
 var key []byte = []byte(os.Getenv("APP_JWT_KEY"))
 
 func writeUnauthed(w http.ResponseWriter) {
-	w.WriteHeader(http.StatusForbidden)
+	w.WriteHeader(http.StatusUnauthorized)
 }
 
 func Authentication(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		jwtToken, err := r.Cookie("auth_token")
 		if err != nil {
-			http.Error(w, "unauthorized", http.StatusForbidden)
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}
 		if jwtToken == nil {
-			http.Error(w, "unauthorized", http.StatusForbidden)
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}
 		token, err := jwt.Parse(jwtToken.Value, func(t *jwt.Token) (any, error) {
@@ -51,7 +51,7 @@ func Authentication(next http.Handler) http.Handler {
 			ctx := context.WithValue(r.Context(), "claims", claims)
 			next.ServeHTTP(w, r.WithContext(ctx))
 		} else {
-			http.Error(w, "unauthorized", http.StatusForbidden)
+			http.Error(w, "unauthorized", http.StatusUnauthorized)
 			return
 		}
 	})
@@ -61,7 +61,7 @@ func Authorization(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		claims, ok := r.Context().Value("claims").(jwt.MapClaims)
 		if !ok {
-			http.Error(w, "token was empty", http.StatusForbidden)
+			http.Error(w, "token was empty", http.StatusUnauthorized)
 			return
 		}
 		if claims["sub"].(string) != "admin" {

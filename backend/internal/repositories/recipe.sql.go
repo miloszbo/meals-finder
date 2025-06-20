@@ -27,13 +27,14 @@ func (q *Queries) AddTagsForRecipe(ctx context.Context, arg AddTagsForRecipePara
 }
 
 const createRecipe = `-- name: CreateRecipe :one
-INSERT INTO recipes (name,recipe,ingredients,time,difficulty) VALUES 
+INSERT INTO recipes (name,recipe,ingredients,time,difficulty,username) VALUES 
 (
   $1::text,
   $2::text,
   $3,
   $4::int,
-  $5::int
+  $5::int,
+  $6::text
 ) RETURNING id
 `
 
@@ -43,6 +44,7 @@ type CreateRecipeParams struct {
 	Ingredients models.IngredientsJson `json:"ingredients"`
 	Time        int32                  `json:"time"`
 	Difficulty  int32                  `json:"difficulty"`
+	Username    string                 `json:"username"`
 }
 
 func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (int32, error) {
@@ -52,6 +54,7 @@ func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (int
 		arg.Ingredients,
 		arg.Time,
 		arg.Difficulty,
+		arg.Username,
 	)
 	var id int32
 	err := row.Scan(&id)
@@ -232,7 +235,7 @@ func (q *Queries) GetAllTags(ctx context.Context) ([]GetAllTagsRow, error) {
 }
 
 const getRecipeWithId = `-- name: GetRecipeWithId :one
-SELECT id, name, recipe, ingredients, time, difficulty FROM recipes WHERE id = $1
+SELECT id, name, recipe, ingredients, time, difficulty, username FROM recipes WHERE id = $1
 `
 
 func (q *Queries) GetRecipeWithId(ctx context.Context, id int32) (Recipe, error) {
@@ -245,6 +248,7 @@ func (q *Queries) GetRecipeWithId(ctx context.Context, id int32) (Recipe, error)
 		&i.Ingredients,
 		&i.Time,
 		&i.Difficulty,
+		&i.Username,
 	)
 	return i, err
 }
