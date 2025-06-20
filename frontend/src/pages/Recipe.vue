@@ -38,6 +38,7 @@
 import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { getRecipeById } from '@/api/axios'
+import { track } from '@/services/analytics' //analytics gathering lib
 
 const route = useRoute()
 const recipe = ref(null)
@@ -47,6 +48,7 @@ onMounted(async () => {
     const { data } = await getRecipeById(route.params.id)
     console.log(data)
     recipe.value = data
+    track('recipe_opened', { recipe_id: route.params.id }) //analytics gathering event
   } catch (err) {
     console.error('Błąd ładowania:', err)
   }

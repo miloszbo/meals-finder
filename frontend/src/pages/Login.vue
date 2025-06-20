@@ -81,6 +81,7 @@ export default {
           if (token) {
             localStorage.setItem('token', token)
           }
+          this.$track('user_logged_in', { username: this.form.login }) //analityka event
           alert('Zalogowano pomyślnie!')
           this.$router.push('/profile')
         }
