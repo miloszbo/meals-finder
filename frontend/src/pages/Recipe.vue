@@ -27,6 +27,27 @@
             {{ recipe.recipe }}
       </p>
     </div>
+    <div class="p-4">
+  <div class="flex flex-col md:flex-row md:items-start md:gap-12">
+    <!-- Rating input -->
+    <div class="flex-1">
+      <p class="text-gray-400 mb-2">Oceń przepis poniżej:</p>
+      <RecipeRating v-model="rating" />
+      <p class="mt-2">Twoja ocena: <span class="font-semibold">{{ rating }}</span>/5</p>
+    </div>
+
+    <!-- Review breakdown -->
+    <div class="flex-1 mt-6 md:mt-0">
+      <h3 class="text-lg font-semibold mb-2">Oceny użytkowników:</h3>
+      <ul class="space-y-1 text-sm text-gray-300">
+        <li v-for="n in 5" :key="n" class="flex justify-between">
+          <span>{{ n }}★</span>
+          <span>{{ reviewStats[n] || 0 }} osób</span>
+        </li>
+      </ul>
+    </div>
+  </div>
+</div>
   </div>
 
   <div v-else class="text-center text-white py-20">
@@ -35,20 +56,43 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
-import { getRecipeById } from '@/api/axios'
+import { getRecipeById, submitRecipeRating, getRatings, getReview } from '@/api/axios'
+import RecipeRating from '@/components/RecipeRating.vue'
 
+const rating = ref(0)
 const route = useRoute()
 const recipe = ref(null)
+const reviewStats = ref({})
 
 onMounted(async () => {
   try {
     const { data } = await getRecipeById(route.params.id)
-    console.log(data)
+    const ratings = await getRatings(route.params.id)
+    console.log(rating)
+    const ratingData = await getReview(route.params.id)
+    console.log(ratingData.data.review_score)
+    rating.value = ratingData.data.review_score
     recipe.value = data
+    reviewStats.value = ratings.data
   } catch (err) {
     console.error('Błąd ładowania:', err)
   }
 })
+
+watch(rating, async (newRating) => {
+  if (newRating > 0 && recipe.value?.id) {
+    try {
+      await submitRecipeRating({ stars: newRating, recipe_id: recipe.value.id })
+
+      // Refresh review stats after submitting
+      const { data } = await getRatings(route.params.id)
+      reviewStats.value = data
+    } catch (err) {
+      console.error('Błąd podczas wysyłania oceny:', err)
+    }
+  }
+})
+
 </script>
