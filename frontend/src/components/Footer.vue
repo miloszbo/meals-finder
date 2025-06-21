@@ -21,6 +21,12 @@
         <a href="#" class="hover:text-white transition font-semibold">FAQ</a>
       </div>
     </div>
-  </footer>
+
+    <div class="w-full text-left py-2 pl-82 text-[11px] text-[#999]">
+        Zdjęcia użyte na stronie pochodzą z serwisów: 
+      <a href="https://unsplash.com" target="_blank" rel="noopener" class="underline hover:text-white transition">Unsplash</a>
+        oraz 
+      <a href="https://www.pexels.com" target="_blank" rel="noopener" class="underline hover:text-white transition">Pexels</a>.
+</div>  </footer>
 </template>
 
