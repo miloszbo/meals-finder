@@ -32,7 +32,8 @@ CREATE TABLE IF NOT EXISTS reviews (
     recipe_id INTEGER NOT NULL,
     username VARCHAR(40) NOT NULL,
     review_score INTEGER NOT NULL,
-    FOREIGN KEY (recipe_id) REFERENCES recipes(id)
+    FOREIGN KEY (recipe_id) REFERENCES recipes(id),
+    CONSTRAINT unique_review UNIQUE (recipe_id,username)
 );
 
 -- Table: ingredients

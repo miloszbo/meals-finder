@@ -30,10 +30,10 @@ CREATE TABLE IF NOT EXISTS recipes (
 CREATE TABLE IF NOT EXISTS reviews (
     id INTEGER PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
     recipe_id INTEGER NOT NULL,
-    user_id INTEGER NOT NULL,
+    username VARCHAR(40) NOT NULL,
     review_score INTEGER NOT NULL,
     FOREIGN KEY (recipe_id) REFERENCES recipes(id),
-    FOREIGN KEY (user_id) REFERENCES users(id)
+    CONSTRAINT unique_review UNIQUE (recipe_id,username)
 );
 
 -- Table: ingredients

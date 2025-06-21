@@ -35,7 +35,7 @@ func gracefulShutdown(apiServer *http.Server, done chan bool) {
 
 func main() {
 	conn := server.NewConnection()
-	defer conn.Close(context.Background())
+	defer conn.Close()
 
 	server := server.NewServer()
 

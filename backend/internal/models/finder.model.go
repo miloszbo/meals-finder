@@ -44,3 +44,8 @@ type RecipeAdd struct {
 	Difficulty  int32           `json:"difficulty"`
 	Tags        []RecipeTags    `json:"tags"`
 }
+
+type Review struct {
+	RecipeId int32 `json:"recipe_id"`
+	Stars    int32 `json:"stars"`
+}

@@ -6,13 +6,13 @@ import (
 	"log"
 	"os"
 
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/joho/godotenv/autoload"
 )
 
-var dbConnInstance *pgx.Conn
+var dbConnInstance *pgxpool.Pool
 
-func NewConnection() *pgx.Conn {
+func NewConnection() *pgxpool.Pool {
 	if dbConnInstance != nil {
 		return dbConnInstance
 	}
@@ -23,31 +23,7 @@ func NewConnection() *pgx.Conn {
 		os.Getenv("DB_PORT"),
 		os.Getenv("DB_DATABASE"),
 	)
-	conn, err := pgx.Connect(context.Background(), connString)
-	if err != nil {
-		log.Fatal(err)
-	}
-	dbConnInstance = conn
-
-	return dbConnInstance
-}
-
-var dbConnInstanceTest *pgx.Conn
-
-func NewConnectionTest() *pgx.Conn {
-	if dbConnInstance != nil {
-		return dbConnInstance
-	}
-
-	connString := fmt.Sprintf("postgres://%s:%s@%s:%s/%s",
-		os.Getenv("TEST_DB_USERNAME"),
-		os.Getenv("TEST_DB_PASSWORD"),
-		os.Getenv("TEST_DB_HOST"),
-		os.Getenv("TEST_DB_PORT"),
-		os.Getenv("TEST_DB_DATABASE"),
-	)
-
-	conn, err := pgx.Connect(context.Background(), connString)
+	conn, err := pgxpool.New(context.Background(), connString)
 	if err != nil {
 		log.Fatal(err)
 	}

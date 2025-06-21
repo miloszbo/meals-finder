@@ -26,6 +26,18 @@ export const getAllRecipes = (params) =>
 export const getRecipeById = (id) =>
   api.get(`/re/${id}`)
 
+export async function submitRecipeRating({ stars, recipe_id }) {
+  return await api.post(`/re`, { stars, recipe_id })
+}
+
+export async function getRatings(id) {
+  return await api.get(`/ret/${id}`)
+}
+
+export async function getReview(id) {
+  return await api.get(`/rev/${id}`)
+}
+
 export const verifyUser = () =>
   api.get('/verify') 
 
