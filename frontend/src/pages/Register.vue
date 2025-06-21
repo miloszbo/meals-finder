@@ -117,6 +117,7 @@ export default {
         }
         const res = await api.post('/user/register', payload)
         console.log('Registered:', res.data)
+        this.$track('user_registered', { username: this.form.username }) //analytical data
         this.$router.push('/login')
       } catch (err) {
         console.error('Registration error:', err)
