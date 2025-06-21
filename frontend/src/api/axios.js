@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "https://mealsfinder-backend-3ghs7wg7-euc.a.run.app",
     headers: {
         'Content-Type':'application/json'
     },
