@@ -6,13 +6,12 @@ import NavPage from '@/pages/Nav.vue'
 import Profile from '@/pages/Profile.vue'
 import Browser from '@/pages/Browser-test.vue'
 import Recipe from '@/pages/Recipe.vue'
-import Start from '@/pages/Start.vue'
 import RecipeMg from '@/pages/RecipeMg.vue'
 import TestPage from '@/pages/TestPage.vue'
 
 const routes = [
   //{ path: '/', name: 'Root', component: HomePage },
-  { path: '/', name: 'Start', component: Start},
+  { path: '/', name: 'HomePage', component: HomePage},
   { path: '/nav', name: 'Nav', component: NavPage },
   { path: '/recipemg', name:'RecipeMG', component: RecipeMg},
   { path: '/home', name: 'Home', component: HomePage },

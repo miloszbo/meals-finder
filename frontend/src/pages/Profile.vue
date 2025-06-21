@@ -37,19 +37,6 @@ import { addUserTags } from "../api/axios"
           <button class="btn btn-primary btn-sm">Edit profile</button>
         </div>
 
-        <div v-else-if="tab === 'settings'" class="max-w-lg space-y-4 overflow-y-auto">
-          <h2 class="text-xl font-bold">Dane osobowe</h2>
-          <label class="form-control">
-            <span class="label-text text-white">Imię i nazwisko</span>
-            <input type="text" class="input input-bordered w-full" placeholder="Wprowadź imię" />
-          </label>
-          <label class="form-control">
-            <span class="label-text text-white">Data urodzenia</span>
-            <input type="date" class="input input-bordered w-full" />
-          </label>
-          <button class="btn btn-success mt-4">Zapisz</button>
-        </div>
-
         <div v-else-if="tab === 'privacy'" class="max-w-xl space-y-4">
           <h2 class="text-xl font-bold">Zmiana danych</h2>
           <p class="text-gray-400">Tutaj możesz zarządzać swoimi danymi kontaktowymi i wiekiem.</p>
@@ -136,10 +123,7 @@ import { addUserTags } from "../api/axios"
           </div>
         </div>
 
-        <div v-else-if="tab === 'security'" class="space-y-2">
-          <h2 class="text-xl font-bold">Bezpieczeństwo</h2>
-          <p class="text-gray-400">Ustaw hasło, uwierzytelnianie 2FA i inne zabezpieczenia konta.</p>
-        </div>
+
         <div v-else-if="tab === 'sharing'" class="space-y-2">
           <h2 class="text-xl font-bold">Osoby i udostępnianie</h2>
           <p class="text-gray-400">Zarządzaj użytkownikami, którzy mogą przeglądać Twoje dane lub przepisy.</p>
@@ -172,9 +156,9 @@ import { addUserTags } from "../api/axios"
           </table>
         </div>
 <!-- TEST -->
-        <div v-else-if="tab === 'test'">
+        <div v-else-if="tab === 'Recenzje'">
           <div class="p-4">
-            <h2 class="text-xl font-bold mb-2">Testowa zakładka</h2>
+            <h2 class="text-xl font-bold mb-2">Recenzje przepisów</h2>
             <p class="text-gray-400 mb-4">Oceń przepis poniżej:</p>
             <RecipeRating v-model="rating" />
             <p class="mt-2">Twoja ocena: <span class="font-semibold">{{ rating }}</span>/5</p>
@@ -259,12 +243,10 @@ import { getTags, addUserTags, deleteUserTags, displayUserTags } from '@/api/axi
 
 const sidebarItems = [
   { name: 'Strona główna', tab: 'profile', icon: User },
-  { name: 'Dane osobowe', tab: 'settings', icon: Settings },
   { name: 'Zmiana danych', tab: 'privacy', icon: Settings },
-  { name: 'Bezpieczeństwo', tab: 'security', icon: Lock },
   { name: 'Osoby i udostępnianie', tab: 'sharing', icon: Users },
   { name: 'Płatności i subskrypcje', tab: 'payments', icon: CreditCard },
-  { name: 'Test', tab: 'test', icon: Users }  // <-- testowa zakładka
+  { name: 'Recenzje', tab: 'Recenzje', icon: Users }  // <-- testowa zakładka
 ]
 
 const selectedTags = ref({})
