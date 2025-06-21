@@ -7,7 +7,7 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	_ "github.com/joho/godotenv/autoload"
 	"github.com/miloszbo/meals-finder/internal/models"
 	repository "github.com/miloszbo/meals-finder/internal/repositories"
@@ -27,14 +27,12 @@ type UserService interface {
 }
 
 type BaseUserService struct {
-	DbConn *pgx.Conn
-	Repo   *repository.Queries
+	Repo *repository.Queries
 }
 
-func NewBaseUserService(conn *pgx.Conn) BaseUserService {
+func NewBaseUserService(conn *pgxpool.Pool) BaseUserService {
 	return BaseUserService{
-		DbConn: conn,
-		Repo:   repository.New(conn),
+		Repo: repository.New(conn),
 	}
 }
 

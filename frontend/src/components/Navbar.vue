@@ -37,7 +37,7 @@ const logout = async () => {
 <template>
   <header class="bg-[#211C54] text-white text-base shadow-md">
     <div class="flex items-center justify-between px-6 py-4 h-20">
-      <router-link to="/" class="text-5xl font-bold hover:text-primary transition-colors duration-200">
+      <router-link to="home" class="text-5xl font-bold hover:text-primary transition-colors duration-200">
         MealsFinder
       </router-link>
 

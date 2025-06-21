@@ -27,14 +27,13 @@ func (q *Queries) AddTagsForRecipe(ctx context.Context, arg AddTagsForRecipePara
 }
 
 const createRecipe = `-- name: CreateRecipe :one
-INSERT INTO recipes (name,recipe,ingredients,time,difficulty,username) VALUES 
+INSERT INTO recipes (name,recipe,ingredients,time,difficulty) VALUES 
 (
   $1::text,
   $2::text,
   $3,
   $4::int,
-  $5::int,
-  $6::text
+  $5::int
 ) RETURNING id
 `
 
@@ -44,7 +43,6 @@ type CreateRecipeParams struct {
 	Ingredients models.IngredientsJson `json:"ingredients"`
 	Time        int32                  `json:"time"`
 	Difficulty  int32                  `json:"difficulty"`
-	Username    string                 `json:"username"`
 }
 
 func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (int32, error) {
@@ -54,7 +52,6 @@ func (q *Queries) CreateRecipe(ctx context.Context, arg CreateRecipeParams) (int
 		arg.Ingredients,
 		arg.Time,
 		arg.Difficulty,
-		arg.Username,
 	)
 	var id int32
 	err := row.Scan(&id)
@@ -234,6 +231,23 @@ func (q *Queries) GetAllTags(ctx context.Context) ([]GetAllTagsRow, error) {
 	return items, nil
 }
 
+const getRatings = `-- name: GetRatings :one
+SELECT json_object_agg(review_score::text, count) AS ratings
+FROM (
+  SELECT review_score, COUNT(*) AS count
+  FROM reviews
+  WHERE recipe_id = $1
+  GROUP BY review_score
+) AS rating_counts
+`
+
+func (q *Queries) GetRatings(ctx context.Context, recipeID int32) ([]byte, error) {
+	row := q.db.QueryRow(ctx, getRatings, recipeID)
+	var ratings []byte
+	err := row.Scan(&ratings)
+	return ratings, err
+}
+
 const getRecipeWithId = `-- name: GetRecipeWithId :one
 SELECT id, name, recipe, ingredients, time, difficulty, username FROM recipes WHERE id = $1
 `
@@ -253,21 +267,70 @@ func (q *Queries) GetRecipeWithId(ctx context.Context, id int32) (Recipe, error)
 	return i, err
 }
 
-const getTagId = `-- name: GetTagId :one
-SELECT t.id AS tag_id
-FROM tags t
-JOIN tags_types tt ON t.type_id = tt.id
-WHERE tags_types.name = $1::text AND tags.name = $2::text
+const getReview = `-- name: GetReview :one
+SELECT id, recipe_id, username, review_score FROM reviews r WHERE r.username = $1::text AND r.recipe_id = $2::int
 `
 
-type GetTagIdParams struct {
-	Key   string `json:"key"`
-	Value string `json:"value"`
+type GetReviewParams struct {
+	Username string `json:"username"`
+	RecipeID int32  `json:"recipe_id"`
 }
 
-func (q *Queries) GetTagId(ctx context.Context, arg GetTagIdParams) (int32, error) {
-	row := q.db.QueryRow(ctx, getTagId, arg.Key, arg.Value)
+func (q *Queries) GetReview(ctx context.Context, arg GetReviewParams) (Review, error) {
+	row := q.db.QueryRow(ctx, getReview, arg.Username, arg.RecipeID)
+	var i Review
+	err := row.Scan(
+		&i.ID,
+		&i.RecipeID,
+		&i.Username,
+		&i.ReviewScore,
+	)
+	return i, err
+}
+
+const getTagId = `-- name: GetTagId :one
+SELECT t.id AS tag_id
+FROM tags t WHERE t.name = $1::text
+`
+
+func (q *Queries) GetTagId(ctx context.Context, name string) (int32, error) {
+	row := q.db.QueryRow(ctx, getTagId, name)
 	var tag_id int32
 	err := row.Scan(&tag_id)
 	return tag_id, err
+}
+
+const insertReview = `-- name: InsertReview :exec
+INSERT INTO reviews (recipe_id, username, review_score)
+VALUES (
+  $1::int,
+  $2::text,
+  $3::int
+) ON CONFLICT (recipe_id, username) DO NOTHING
+`
+
+type InsertReviewParams struct {
+	RecipeID    int32  `json:"recipe_id"`
+	Username    string `json:"username"`
+	ReviewScore int32  `json:"review_score"`
+}
+
+func (q *Queries) InsertReview(ctx context.Context, arg InsertReviewParams) error {
+	_, err := q.db.Exec(ctx, insertReview, arg.RecipeID, arg.Username, arg.ReviewScore)
+	return err
+}
+
+const updateReview = `-- name: UpdateReview :exec
+UPDATE reviews SET review_score = $1 WHERE username = $2::text AND recipe_id = $3::int
+`
+
+type UpdateReviewParams struct {
+	NewReviewScore int32  `json:"new_review_score"`
+	Username       string `json:"username"`
+	RecipeID       int32  `json:"recipe_id"`
+}
+
+func (q *Queries) UpdateReview(ctx context.Context, arg UpdateReviewParams) error {
+	_, err := q.db.Exec(ctx, updateReview, arg.NewReviewScore, arg.Username, arg.RecipeID)
+	return err
 }

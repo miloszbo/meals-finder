@@ -2,9 +2,11 @@ package services
 
 import (
 	"context"
+	"errors"
 	"log"
 
 	"github.com/jackc/pgx/v5"
+	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/miloszbo/meals-finder/internal/models"
 	repository "github.com/miloszbo/meals-finder/internal/repositories"
 )
@@ -12,30 +14,74 @@ import (
 type FinderService interface {
 	FindRecipe(ctx context.Context, recipeParams models.RecipesFinderParams) ([]repository.FilterRecipesByTagNamesAndParamsRow, error)
 	GetRecipe(ctx context.Context, id int32) (repository.Recipe, error)
+	GetReview(ctx context.Context, id int32, username string) (repository.Review, error)
 	GetTags(ctx context.Context) ([]repository.GetAllTagsRow, error)
-	CreateRecipe(ctx context.Context, recipe *models.RecipeAdd, username string) error
+	CreateRecipe(ctx context.Context, recipe *models.RecipeAdd) error
+	AddReview(ctx context.Context, review *models.Review, username string) error
+	GetRatings(ctx context.Context, id int32) ([]byte, error)
 }
 
 type BaseFinderService struct {
-	DbConn *pgx.Conn
-	Repo   *repository.Queries
+	Repo *repository.Queries
 }
 
-func NewBaseFinderService(conn *pgx.Conn) BaseFinderService {
+func NewBaseFinderService(conn *pgxpool.Pool) BaseFinderService {
 	return BaseFinderService{
-		DbConn: conn,
-		Repo:   repository.New(conn),
+		Repo: repository.New(conn),
 	}
 }
 
-func (b *BaseFinderService) CreateRecipe(ctx context.Context, recipe *models.RecipeAdd, username string) error {
+func (b *BaseFinderService) GetRatings(ctx context.Context, id int32) ([]byte, error) {
+	ratings, err := b.Repo.GetRatings(ctx, id)
+	if err != nil {
+		return nil, err
+	}
+
+	return ratings, nil
+}
+
+func (b *BaseFinderService) AddReview(ctx context.Context, review *models.Review, username string) error {
+	_, err := b.Repo.GetReview(ctx, repository.GetReviewParams{
+		Username: username,
+		RecipeID: review.RecipeId,
+	})
+
+	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			err = b.Repo.InsertReview(ctx, repository.InsertReviewParams{
+				RecipeID:    review.RecipeId,
+				Username:    username,
+				ReviewScore: review.Stars,
+			})
+
+			if err != nil {
+				return err
+			}
+			return nil
+		}
+		return err
+	}
+
+	err = b.Repo.UpdateReview(ctx, repository.UpdateReviewParams{
+		RecipeID:       review.RecipeId,
+		Username:       username,
+		NewReviewScore: review.Stars,
+	})
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (b *BaseFinderService) CreateRecipe(ctx context.Context, recipe *models.RecipeAdd) error {
 	id, err := b.Repo.CreateRecipe(ctx, repository.CreateRecipeParams{
 		Name:        recipe.Name,
 		Recipe:      recipe.Recipe,
 		Ingredients: recipe.Ingredients,
 		Time:        recipe.Time,
 		Difficulty:  recipe.Difficulty,
-		Username:    username,
 	})
 
 	if err != nil {
@@ -44,10 +90,7 @@ func (b *BaseFinderService) CreateRecipe(ctx context.Context, recipe *models.Rec
 	}
 
 	for _, tag := range recipe.Tags {
-		tagId, err := b.Repo.GetTagId(ctx, repository.GetTagIdParams{
-			Key:   tag.TagType,
-			Value: tag.Name,
-		})
+		tagId, err := b.Repo.GetTagId(ctx, tag.Name)
 		if err != nil {
 			log.Println(err.Error())
 			return err
@@ -78,6 +121,18 @@ func (b *BaseFinderService) GetRecipe(ctx context.Context, id int32) (repository
 	}
 
 	return recipe, nil
+}
+
+func (b *BaseFinderService) GetReview(ctx context.Context, id int32, username string) (repository.Review, error) {
+	review, err := b.Repo.GetReview(ctx, repository.GetReviewParams{
+		RecipeID: id,
+		Username: username,
+	})
+	if err != nil {
+
+	}
+
+	return review, nil
 }
 
 func (b *BaseFinderService) FindRecipe(ctx context.Context, recipeParams models.RecipesFinderParams) ([]repository.FilterRecipesByTagNamesAndParamsRow, error) {

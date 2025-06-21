@@ -1,7 +1,7 @@
 import axios from "axios";
 
 const api = axios.create({
-    baseURL: "http://localhost:8080",
+    baseURL: "https://mealsfinder-backend-3ghs7wg7-euc.a.run.app",
     headers: {
         'Content-Type':'application/json'
     },
@@ -26,6 +26,18 @@ export const getAllRecipes = (params) =>
 export const getRecipeById = (id) =>
   api.get(`/re/${id}`)
 
+export async function submitRecipeRating({ stars, recipe_id }) {
+  return await api.post(`/re`, { stars, recipe_id })
+}
+
+export async function getRatings(id) {
+  return await api.get(`/ret/${id}`)
+}
+
+export async function getReview(id) {
+  return await api.get(`/rev/${id}`)
+}
+
 export const verifyUser = () =>
   api.get('/verify') 
 
@@ -35,12 +47,8 @@ export const logoutUser = () =>
 export const getTags = () =>
   api.get('/tags')
 
-export const addRecipe = (formData) =>
-  api.post('/recipes', formData, {
-    headers: {
-      'Content-Type': 'multipart/form-data'
-    }
-  })
+export const addRecipe = (data) =>
+  api.post('/recipe', data)
 
 export const addUserTags = (data) =>
   api.post('/user/tags', data)

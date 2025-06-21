@@ -16,12 +16,81 @@ type FinderHandler struct {
 	FinderService services.FinderService
 }
 
-func (f *FinderHandler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
+func (f *FinderHandler) GetRatings(w http.ResponseWriter, r *http.Request) {
+	ctx := context.Background()
+	id64, err := strconv.ParseInt(r.PathValue("id"), 10, 32)
+	id := int32(id64)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), 500)
+	}
+	ratings, err := f.FinderService.GetRatings(ctx, id)
+	if err != nil {
+		http.Error(w, err.Error(), StatusFromError(err))
+		return
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(ratings)
+}
+
+func (f *FinderHandler) AddReview(w http.ResponseWriter, r *http.Request) {
+	var review models.Review
+	ctx := r.Context()
+
+	if err := json.NewDecoder(r.Body).Decode(&review); err != nil {
+		log.Println(err.Error())
+		http.Error(w, ErrBadRequest.Error(), http.StatusBadRequest)
+		return
+	}
+
+	claims, ok := ctx.Value("claims").(jwt.MapClaims)
+	if !ok {
+		http.Error(w, "token was empty", http.StatusUnauthorized)
+	}
+
+	err := f.FinderService.AddReview(ctx, &review, claims["sub"].(string))
+
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "internal error", http.StatusInternalServerError)
+		return
+	}
+	w.WriteHeader(http.StatusCreated)
+	w.Write([]byte(`{"message":"user created"}`))
+}
+
+func (f *FinderHandler) GetReview(w http.ResponseWriter, r *http.Request) {
 	ctx := r.Context()
 	claims, ok := ctx.Value("claims").(jwt.MapClaims)
 	if !ok {
 		http.Error(w, "token was empty", http.StatusUnauthorized)
 	}
+	id64, err := strconv.ParseInt(r.PathValue("id"), 10, 32)
+	id := int32(id64)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, err.Error(), 500)
+	}
+	review, err := f.FinderService.GetReview(ctx, id, claims["sub"].(string))
+	if err != nil {
+		http.Error(w, err.Error(), StatusFromError(err))
+		return
+	}
+
+	reviewJson, err := json.Marshal(review)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, "internal error", http.StatusInternalServerError)
+	}
+
+	w.Header().Set("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+	w.Write(reviewJson)
+}
+
+func (f *FinderHandler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 	var recipe models.RecipeAdd
 
 	if err := json.NewDecoder(r.Body).Decode(&recipe); err != nil {
@@ -30,7 +99,7 @@ func (f *FinderHandler) CreateRecipe(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if err := f.FinderService.CreateRecipe(r.Context(), &recipe, claims["sub"].(string)); err != nil {
+	if err := f.FinderService.CreateRecipe(r.Context(), &recipe); err != nil {
 		log.Println(err.Error())
 		http.Error(w, "internal error", http.StatusInternalServerError)
 		return
