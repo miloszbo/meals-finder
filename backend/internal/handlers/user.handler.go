@@ -189,5 +189,4 @@ func (u *UserHandler) DisplayUserTags(w http.ResponseWriter, r *http.Request) {
 	jsonData, _ := json.Marshal(data)
 
 	w.Write(jsonData)
-	w.WriteHeader(http.StatusOK)
 }

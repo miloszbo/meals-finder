@@ -102,3 +102,26 @@ INSERT INTO recipes_tags (recipe_id, tag_id) VALUES
 -- name: GetTagId :one
 SELECT t.id AS tag_id
 FROM tags t WHERE t.name = @name::text;
+
+-- name: InsertReview :exec
+INSERT INTO reviews (recipe_id, username, review_score)
+VALUES (
+  @recipe_id::int,
+  @username::text,
+  @review_score::int
+) ON CONFLICT (recipe_id, username) DO NOTHING;
+
+-- name: GetReview :one
+SELECT * FROM reviews r WHERE r.username = @username::text AND r.recipe_id = @recipe_id::int;
+
+-- name: UpdateReview :exec
+UPDATE reviews SET review_score = @new_review_score WHERE username = @username::text AND recipe_id = @recipe_id::int;
+
+-- name: GetRatings :one
+SELECT json_object_agg(review_score::text, count) AS ratings
+FROM (
+  SELECT review_score, COUNT(*) AS count
+  FROM reviews
+  WHERE recipe_id = $1
+  GROUP BY review_score
+) AS rating_counts;
