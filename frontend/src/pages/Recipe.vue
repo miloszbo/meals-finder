@@ -60,6 +60,7 @@ import { ref, onMounted, watch } from 'vue'
 import { useRoute } from 'vue-router'
 import { getRecipeById, submitRecipeRating, getRatings, getReview } from '@/api/axios'
 import RecipeRating from '@/components/RecipeRating.vue'
+import { track } from '@/services/analytics' //analytics gathering lib
 
 const rating = ref(0)
 const route = useRoute()
@@ -75,6 +76,7 @@ onMounted(async () => {
     console.log(ratingData.data.review_score)
     rating.value = ratingData.data.review_score
     recipe.value = data
+    track('recipe_opened', { recipe_id: route.params.id }) //analytics gathering event
     reviewStats.value = ratings.data
   } catch (err) {
     console.error('Błąd ładowania:', err)
