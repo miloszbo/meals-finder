@@ -3,16 +3,31 @@ instance_class: F1
 
 automatic_scaling:
   max_instances: 1
-  
+
 handlers:
   - url: /tags\.json
     static_files: tags.json
-    upload: tags\.json
-    
+    upload: tags.json
+
+  - url: /recipes\.json
+    static_files: recipes.json
+    upload: recipes.json
+
+  - url: /assets
+    static_dir: dist/assets
+
+  - url: /images
+    static_dir: dist/images
+
+  - url: /(.*\.(css|js|png|jpg|jpeg|gif|svg|ico|webp|woff|woff2|ttf|otf|eot))
+    static_files: dist/\1
+    upload: dist/(.*)
+
   - url: /
     static_files: dist/index.html
     upload: dist/index.html
 
-  - url: /(.*)
-    static_files: dist/\1
-    upload: dist/(.*)
+
+  - url: /.*
+    static_files: dist/index.html
+    upload: dist/index.html
