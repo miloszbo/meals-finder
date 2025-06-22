@@ -13,7 +13,7 @@ const routes = [
   //{ path: '/', name: 'Root', component: HomePage },
   { path: '/', name: 'HomePage', component: HomePage},
   { path: '/nav', name: 'Nav', component: NavPage },
-  { path: '/recipemg', name:'RecipeMG', component: RecipeMg},
+  { path: '/recipemg', name:'RecipeMG', component: RecipeMg ,meta: { requiresAuth: true }},
   { path: '/home', name: 'Home', component: HomePage },
   { path: '/login', name: 'Login', component: LoginPage },
   { path: '/register', name: 'Register', component: RegisterPage },
@@ -29,7 +29,6 @@ const router = createRouter({
   routes
 })
 
-/*
 router.beforeEach(async (to, from, next) => {
   if (to.meta.requiresAuth) {
     try {
@@ -45,5 +44,5 @@ router.beforeEach(async (to, from, next) => {
     next()
   }
 })
-*/
+
 export default router

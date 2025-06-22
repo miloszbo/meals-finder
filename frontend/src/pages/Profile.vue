@@ -156,13 +156,7 @@ import { addUserTags } from "../api/axios"
           </table>
         </div>
 <!-- TEST -->
-        <div v-else-if="tab === 'Recenzje'">
-          <div class="p-4">
-            <h2 class="text-xl font-bold mb-2">Recenzje przepisów</h2>
-            <p class="text-gray-400 mb-4">Oceń przepis poniżej:</p>
-            <RecipeRating v-model="rating" />
-            <p class="mt-2">Twoja ocena: <span class="font-semibold">{{ rating }}</span>/5</p>
-          </div>
+        <div v-else-if="tab === 'Tagi'">
           <h2 class="text-xl font-bold mb-4">Search by tags</h2>
 
       <div class="relative" ref="dropdownWrapper">
@@ -246,7 +240,7 @@ const sidebarItems = [
   { name: 'Zmiana danych', tab: 'privacy', icon: Settings },
   { name: 'Osoby i udostępnianie', tab: 'sharing', icon: Users },
   { name: 'Płatności i subskrypcje', tab: 'payments', icon: CreditCard },
-  { name: 'Recenzje', tab: 'Recenzje', icon: Users }  // <-- testowa zakładka
+  { name: 'Tagi', tab: 'Tagi', icon: Users }  // <-- testowa zakładka
 ]
 
 const selectedTags = ref({})
