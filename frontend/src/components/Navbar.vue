@@ -1,47 +1,13 @@
-<script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { verifyUser, logoutUser } from '@/api/axios'
-
-const isLoggedIn = ref(false)
-const dropdownOpen = ref(false)
-const router = useRouter()
-
-onMounted(async () => {
-  try {
-    const resp = await verifyUser()
-    if (resp.status == 401) {
-      throw new Error("unauthorized")
-    }
-    isLoggedIn.value = true
-  } catch {
-    isLoggedIn.value = false
-  }
-})
-
-const toggleDropdown = () => {
-  dropdownOpen.value = !dropdownOpen.value
-}
-
-const logout = async () => {
-  try {
-    await logoutUser()
-    isLoggedIn.value = false
-    router.push('/home')
-  } catch (err) {
-    console.error('Błąd przy wylogowaniu:', err)
-  }
-}
-</script>
-
 <template>
+  <!-- Navigation header with logo and user/menu icons -->
   <header class="bg-[#211C54] text-white text-base shadow-md">
     <div class="flex items-center justify-between px-6 py-4 h-20">
+      <!-- App logo/title, links to home page -->
       <router-link to="home" class="text-5xl font-bold hover:text-primary transition-colors duration-200">
         MealsFinder
       </router-link>
 
-      <!-- 🔽 Ikonki po prawej -->
+       <!-- Navigation icons -->
       <div class="flex items-center gap-4 text-lg relative">
         <!-- Recipes link -->
         <router-link to="/browser" title="Recipes">
@@ -72,3 +38,42 @@ const logout = async () => {
     </div>
   </header>
 </template>
+
+<script setup>
+// Navigation bar with authentication check and user dropdown menu
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { verifyUser, logoutUser } from '@/api/axios'
+
+const isLoggedIn = ref(false)
+const dropdownOpen = ref(false)
+const router = useRouter()
+
+// Check login state when component mounts
+onMounted(async () => {
+  try {
+    const resp = await verifyUser()
+    if (resp.status == 401) {
+      throw new Error("unauthorized")
+    }
+    isLoggedIn.value = true
+  } catch {
+    isLoggedIn.value = false
+  }
+})
+
+// Toggle user dropdown menu
+const toggleDropdown = () => {
+  dropdownOpen.value = !dropdownOpen.value
+}
+
+const logout = async () => {
+  try {
+    await logoutUser()
+    isLoggedIn.value = false
+    router.push('/home')
+  } catch (err) {
+    console.error('Błąd przy wylogowaniu:', err)
+  }
+}
+</script>
